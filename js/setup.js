@@ -42,156 +42,181 @@ function renderSetupOverlay() {
     const overlay = document.getElementById('setupOverlay');
     if (!overlay) return;
     overlay.innerHTML = `
-    <div class="min-h-screen bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <!-- Header -->
-            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center py-8 px-6">
-                <div class="text-5xl mb-3">✡️</div>
-                <h1 class="text-2xl font-extrabold">ברוכים הבאים!</h1>
-                <p class="text-indigo-200 text-sm mt-1">מערכת לניהול שבת בר מצווה</p>
-            </div>
+    <div class="min-h-screen bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 flex items-center justify-center p-4 py-8">
+      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg md:max-w-4xl overflow-hidden flex flex-col md:flex-row">
 
-            <!-- Steps -->
-            <div id="setupStep1" class="p-6 space-y-5">
-                <h2 class="text-xl font-extrabold text-slate-800 text-center">כיצד תרצו להתחיל?</h2>
-                <button onclick="showSetupCreate()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-2xl text-base transition shadow-lg flex items-center gap-4">
-                    <span class="text-3xl">✨</span>
-                    <div class="text-right">
-                        <div class="font-extrabold">צור אירוע חדש</div>
-                        <div class="text-indigo-200 text-xs font-normal">הגדר את הפרטים ותתחיל לתכנן</div>
-                    </div>
-                </button>
-                <button onclick="showSetupJoin()" class="w-full bg-white hover:bg-slate-50 text-indigo-700 border-2 border-indigo-200 font-bold py-4 px-6 rounded-2xl text-base transition flex items-center gap-4">
-                    <span class="text-3xl">🔗</span>
-                    <div class="text-right">
-                        <div class="font-extrabold">הצטרף לאירוע קיים</div>
-                        <div class="text-slate-500 text-xs font-normal">הזן קוד שקיבלת מבן/בת הזוג</div>
-                    </div>
-                </button>
-            </div>
-
-            <!-- Create Event Form -->
-            <div id="setupStepCreate" class="hidden p-6 space-y-4">
-                <div class="flex items-center gap-2 mb-2">
-                    <button onclick="showSetupStep1()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">←</button>
-                    <h2 class="text-lg font-extrabold text-slate-800">פרטי האירוע</h2>
-                </div>
-                <p class="text-xs text-indigo-600 bg-indigo-50 rounded-xl p-3">💡 תוכלו לערוך את כל הפרטים בהמשך בלשונית ההגדרות</p>
-
-                <div class="grid grid-cols-1 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">שם הבן (חובה)</label>
-                        <input type="text" id="setupBoyName" placeholder="לדוגמה: יובל" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">תאריך / פרשת השבוע</label>
-                        <div class="flex gap-2 mb-2">
-                            <button id="setupDateTypeDate" onclick="setSetupDateType('date')" class="flex-1 py-2 rounded-xl text-xs font-bold border-2 border-indigo-600 bg-indigo-600 text-white transition">📅 תאריך</button>
-                            <button id="setupDateTypeParasha" onclick="setSetupDateType('parasha')" class="flex-1 py-2 rounded-xl text-xs font-bold border-2 border-slate-200 text-slate-600 transition">📖 פרשת השבוע</button>
-                        </div>
-                        <div id="setupDateInput">
-                            <input type="date" id="setupEventDate" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        </div>
-                        <div id="setupParashaInput" class="hidden space-y-2">
-                            <select id="setupParashaYear" onchange="updateParashaList()" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                                <option value="5786">תשפ״ו (2025–2026)</option>
-                                <option value="5787">תשפ״ז (2026–2027)</option>
-                                <option value="5788">תשפ״ח (2027–2028)</option>
-                                <option value="5789">תשפ״ט (2028–2029)</option>
-                            </select>
-                            <select id="setupParashaName" onchange="updateParashaDatePreview()" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                                <option value="">-- בחר פרשה --</option>
-                            </select>
-                            <div id="parashaDatePreview" class="text-xs text-indigo-700 bg-indigo-50 rounded-lg px-3 py-2 hidden">
-                                📅 תאריך הפרשה: <span id="parashaDateText" class="font-bold"></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">תקציב מתוכנן (₪) — ניתן לדלג</label>
-                        <input type="number" id="setupBudget" placeholder="לדוגמה: 40000" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">שמות האחראיים על האירוע</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="setupResp1" value="אבא" class="p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-center font-bold">
-                            <input type="text" id="setupResp2" value="אמא" class="p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-center font-bold">
-                        </div>
-                        <div id="extraRespsContainer" class="mt-2 space-y-2"></div>
-                        <button onclick="addExtraResp()" class="mt-2 text-xs text-indigo-600 hover:underline font-bold">+ הוסף אחראי נוסף</button>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2">האם האירוע כולל לינה?</label>
-                        <div class="flex gap-2">
-                            <button id="setupAccYes" onclick="setSetupAccommodation(true)" class="flex-1 py-2 rounded-xl text-xs font-bold border-2 border-slate-200 text-slate-600 transition">🏡 כן, יש לינה</button>
-                            <button id="setupAccNo" onclick="setSetupAccommodation(false)" class="flex-1 py-2 rounded-xl text-xs font-bold border-2 border-indigo-600 bg-indigo-600 text-white transition">❌ לא, ללא לינה</button>
-                        </div>
-                    </div>
-
-                    <div id="setupAccTypes" class="hidden space-y-2">
-                        <label class="block text-xs font-bold text-slate-600">סוג הלינה (ניתן לבחור כמה)</label>
-                        <div class="grid grid-cols-1 gap-2">
-                            <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
-                                <input type="checkbox" name="accType" value="villa" class="w-4 h-4 rounded text-indigo-600">
-                                <span class="text-sm font-semibold">🏠 וילה</span>
-                            </label>
-                            <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
-                                <input type="checkbox" name="accType" value="hotel" class="w-4 h-4 rounded text-indigo-600">
-                                <span class="text-sm font-semibold">🏨 מלון / בית הארחה</span>
-                            </label>
-                            <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
-                                <input type="checkbox" name="accType" value="friends" class="w-4 h-4 rounded text-indigo-600">
-                                <span class="text-sm font-semibold">🏘️ אצל חברים / שכנים</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2">אילו ארוחות מתקיימות?</label>
-                        <div class="space-y-2">
-                            <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
-                                <input type="checkbox" id="setupMealFriday" value="friday" checked class="w-4 h-4 rounded text-indigo-600">
-                                <span class="text-sm font-semibold">🍷 ערב שבת</span>
-                            </label>
-                            <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
-                                <input type="checkbox" id="setupMealSaturday" value="saturday" checked class="w-4 h-4 rounded text-indigo-600">
-                                <span class="text-sm font-semibold">⛪ בוקר שבת וקידוש</span>
-                            </label>
-                            <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
-                                <input type="checkbox" id="setupMealThird" value="third" checked class="w-4 h-4 rounded text-indigo-600">
-                                <span class="text-sm font-semibold">🥧 סעודה שלישית</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <button onclick="completeSetup()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg mt-2">
-                    צור את האירוע שלי ←
-                </button>
-            </div>
-
-            <!-- Join Event -->
-            <div id="setupStepJoin" class="hidden p-6 space-y-4">
-                <div class="flex items-center gap-2 mb-2">
-                    <button onclick="showSetupStep1()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">←</button>
-                    <h2 class="text-lg font-extrabold text-slate-800">הצטרף לאירוע קיים</h2>
-                </div>
-                <p class="text-sm text-slate-600 bg-slate-50 rounded-xl p-3">
-                    💡 בקש מבן/בת הזוג לשלוח לך את <strong>קוד האירוע</strong> או את <strong>הלינק</strong> מלשונית ההגדרות
-                </p>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">קוד האירוע</label>
-                    <input type="text" id="joinEventCode" placeholder="לדוגמה: bm-a3k9x2" dir="ltr" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono text-center text-lg">
-                </div>
-                <button onclick="joinExistingEvent()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg">
-                    התחבר לאירוע ←
-                </button>
-            </div>
+        <!-- Left decorative panel (desktop only) -->
+        <div class="hidden md:flex flex-col justify-between bg-gradient-to-b from-indigo-600 to-purple-700 text-white p-10 w-80 shrink-0">
+          <div>
+            <div class="text-6xl mb-5">✡️</div>
+            <h1 class="text-3xl font-extrabold leading-tight mb-3">מערכת ניהול<br>בר מצווה</h1>
+            <p class="text-indigo-200 text-sm leading-relaxed">תכנון מלא של האירוע — משימות, אורחים, תקציב, לינה, תפריט ועוד.</p>
+          </div>
+          <div class="space-y-3 text-sm">
+            <div class="flex items-center gap-2 text-indigo-200"><span>✅</span> ניהול משימות חכם</div>
+            <div class="flex items-center gap-2 text-indigo-200"><span>👥</span> אישורי הגעה מאורחים</div>
+            <div class="flex items-center gap-2 text-indigo-200"><span>☁️</span> סנכרון בין כל בני המשפחה</div>
+            <div class="flex items-center gap-2 text-indigo-200"><span>📲</span> שיתוף קל בוואטסאפ</div>
+          </div>
         </div>
+
+        <!-- Right: form area -->
+        <div class="flex-1 flex flex-col">
+          <!-- Mobile header (hidden on desktop) -->
+          <div class="md:hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-center py-7 px-6">
+            <div class="text-5xl mb-3">✡️</div>
+            <h1 class="text-2xl font-extrabold">ברוכים הבאים!</h1>
+            <p class="text-indigo-200 text-sm mt-1">מערכת לניהול שבת בר מצווה</p>
+          </div>
+
+          <!-- Steps -->
+          <div id="setupStep1" class="p-6 md:p-10 space-y-4 flex-1 flex flex-col justify-center">
+            <h2 class="text-xl md:text-2xl font-extrabold text-slate-800 text-center mb-2">כיצד תרצו להתחיל?</h2>
+            <button onclick="showSetupCreate()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 px-6 rounded-2xl text-base transition shadow-lg flex items-center gap-4">
+              <span class="text-3xl">✨</span>
+              <div class="text-right">
+                <div class="font-extrabold">צור אירוע חדש</div>
+                <div class="text-indigo-200 text-xs font-normal mt-0.5">הגדר את הפרטים ותתחיל לתכנן</div>
+              </div>
+            </button>
+            <button onclick="showSetupJoin()" class="w-full bg-white hover:bg-slate-50 text-indigo-700 border-2 border-indigo-200 font-bold py-5 px-6 rounded-2xl text-base transition flex items-center gap-4">
+              <span class="text-3xl">🔗</span>
+              <div class="text-right">
+                <div class="font-extrabold">הצטרף לאירוע קיים</div>
+                <div class="text-slate-500 text-xs font-normal mt-0.5">הזן קוד שקיבלת מבן/בת הזוג</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Create Event Form -->
+          <div id="setupStepCreate" class="hidden p-6 md:p-10 overflow-y-auto">
+            <div class="flex items-center gap-2 mb-4">
+              <button onclick="showSetupStep1()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">←</button>
+              <h2 class="text-lg md:text-xl font-extrabold text-slate-800">פרטי האירוע</h2>
+            </div>
+            <p class="text-xs text-indigo-600 bg-indigo-50 rounded-xl p-3 mb-4">💡 תוכלו לערוך את כל הפרטים בהמשך בלשונית ההגדרות</p>
+
+            <div class="md:grid md:grid-cols-2 md:gap-x-6 space-y-3 md:space-y-0">
+              <!-- Col 1 -->
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">שם הבן (חובה)</label>
+                  <input type="text" id="setupBoyName" placeholder="לדוגמה: יובל" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">תאריך / פרשת השבוע</label>
+                  <div class="flex gap-2 mb-2">
+                    <button id="setupDateTypeDate" onclick="setSetupDateType('date')" class="flex-1 py-2 rounded-xl text-xs font-bold border-2 border-indigo-600 bg-indigo-600 text-white transition">📅 תאריך</button>
+                    <button id="setupDateTypeParasha" onclick="setSetupDateType('parasha')" class="flex-1 py-2 rounded-xl text-xs font-bold border-2 border-slate-200 text-slate-600 transition">📖 פרשת השבוע</button>
+                  </div>
+                  <div id="setupDateInput">
+                    <input type="date" id="setupEventDate" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  </div>
+                  <div id="setupParashaInput" class="hidden space-y-2">
+                    <select id="setupParashaYear" onchange="updateParashaList()" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                      <option value="5786">תשפ״ו (2025–2026)</option>
+                      <option value="5787">תשפ״ז (2026–2027)</option>
+                      <option value="5788">תשפ״ח (2027–2028)</option>
+                      <option value="5789">תשפ״ט (2028–2029)</option>
+                    </select>
+                    <select id="setupParashaName" onchange="updateParashaDatePreview()" class="w-full p-3 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                      <option value="">-- בחר פרשה --</option>
+                    </select>
+                    <div id="parashaDatePreview" class="text-xs text-indigo-700 bg-indigo-50 rounded-lg px-3 py-2 hidden">
+                      📅 תאריך הפרשה: <span id="parashaDateText" class="font-bold"></span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">תקציב מתוכנן (₪) — ניתן לדלג</label>
+                  <input type="number" id="setupBudget" placeholder="לדוגמה: 40000" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-1">שמות האחראיים</label>
+                  <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="setupResp1" value="אבא" class="p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-center font-bold">
+                    <input type="text" id="setupResp2" value="אמא" class="p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none text-center font-bold">
+                  </div>
+                  <div id="extraRespsContainer" class="mt-2 space-y-2"></div>
+                  <button onclick="addExtraResp()" class="mt-2 text-xs text-indigo-600 hover:underline font-bold">+ הוסף אחראי נוסף</button>
+                </div>
+              </div>
+
+              <!-- Col 2 -->
+              <div class="space-y-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-2">האם האירוע כולל לינה?</label>
+                  <div class="flex gap-2">
+                    <button id="setupAccYes" onclick="setSetupAccommodation(true)" class="flex-1 py-2.5 rounded-xl text-xs font-bold border-2 border-slate-200 text-slate-600 transition">🏡 כן, יש לינה</button>
+                    <button id="setupAccNo" onclick="setSetupAccommodation(false)" class="flex-1 py-2.5 rounded-xl text-xs font-bold border-2 border-indigo-600 bg-indigo-600 text-white transition">❌ לא, ללא לינה</button>
+                  </div>
+                </div>
+
+                <div id="setupAccTypes" class="hidden space-y-2">
+                  <label class="block text-xs font-bold text-slate-600">סוג הלינה (ניתן לבחור כמה)</label>
+                  <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
+                    <input type="checkbox" name="accType" value="villa" class="w-4 h-4 rounded text-indigo-600">
+                    <span class="text-sm font-semibold">🏠 וילה</span>
+                  </label>
+                  <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
+                    <input type="checkbox" name="accType" value="hotel" class="w-4 h-4 rounded text-indigo-600">
+                    <span class="text-sm font-semibold">🏨 מלון / בית הארחה</span>
+                  </label>
+                  <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
+                    <input type="checkbox" name="accType" value="friends" class="w-4 h-4 rounded text-indigo-600">
+                    <span class="text-sm font-semibold">🏘️ אצל חברים / שכנים</span>
+                  </label>
+                </div>
+
+                <div>
+                  <label class="block text-xs font-bold text-slate-600 mb-2">אילו ארוחות מתקיימות?</label>
+                  <div class="space-y-2">
+                    <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
+                      <input type="checkbox" id="setupMealFriday" value="friday" checked class="w-4 h-4 rounded text-indigo-600">
+                      <span class="text-sm font-semibold">🍷 ערב שבת</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
+                      <input type="checkbox" id="setupMealSaturday" value="saturday" checked class="w-4 h-4 rounded text-indigo-600">
+                      <span class="text-sm font-semibold">⛪ בוקר שבת וקידוש</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50">
+                      <input type="checkbox" id="setupMealThird" value="third" checked class="w-4 h-4 rounded text-indigo-600">
+                      <span class="text-sm font-semibold">🥧 סעודה שלישית</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="pt-2 md:pt-4">
+                  <button onclick="completeSetup()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg">
+                    צור את האירוע שלי ←
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Join Event -->
+          <div id="setupStepJoin" class="hidden p-6 md:p-10 flex-1 flex flex-col justify-center space-y-4">
+            <div class="flex items-center gap-2 mb-2">
+              <button onclick="showSetupStep1()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">←</button>
+              <h2 class="text-lg md:text-xl font-extrabold text-slate-800">הצטרף לאירוע קיים</h2>
+            </div>
+            <p class="text-sm text-slate-600 bg-slate-50 rounded-xl p-4">
+              💡 בקש מבן/בת הזוג לשלוח לך את <strong>קוד האירוע</strong> או את <strong>הלינק</strong> מלשונית ההגדרות
+            </p>
+            <div>
+              <label class="block text-xs font-bold text-slate-600 mb-1">קוד האירוע</label>
+              <input type="text" id="joinEventCode" placeholder="לדוגמה: bm-a3k9x2" dir="ltr" class="w-full p-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono text-center text-lg">
+            </div>
+            <button onclick="joinExistingEvent()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg">
+              התחבר לאירוע ←
+            </button>
+          </div>
+        </div><!-- end right -->
+      </div>
     </div>`;
     overlay.classList.remove('hidden');
     // Pre-populate parasha list

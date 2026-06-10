@@ -21,6 +21,7 @@ async function connectToFirebaseWithSetup(setup, joinedExisting = false) {
 
     const hasConfig = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId;
     if (!hasConfig) {
+        console.warn('[Firebase] No credentials — running local-only. Check js/firebase-credentials.js exists and has apiKey.');
         updateCloudStatus(false);
         return;
     }
@@ -50,7 +51,10 @@ async function connectToFirebaseWithSetup(setup, joinedExisting = false) {
 
         startFirebaseListeners();
     } catch (e) {
-        console.error('Firebase connect error:', e);
+        console.error('[Firebase] Connection failed:', e.code, e.message);
+        if (e.code === 'auth/configuration-not-found' || e.code === 'auth/operation-not-allowed') {
+            console.warn('[Firebase] Anonymous Authentication is not enabled. Enable it at: Firebase Console → Authentication → Sign-in method → Anonymous');
+        }
         updateCloudStatus(false);
     }
 }
