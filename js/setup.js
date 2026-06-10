@@ -198,8 +198,55 @@ function renderSetupOverlay() {
             </div>
           </div>
 
-          <!-- Join Event -->
-          <div id="setupStepJoin" class="hidden p-6 md:p-10 flex-1 flex flex-col justify-center space-y-4">
+          <!-- Save Access Step -->
+          <div id="setupStepSave" class="hidden p-6 md:p-10 flex-1 flex flex-col justify-center">
+            <div class="text-center mb-6">
+              <div class="text-5xl mb-3">🔑</div>
+              <h2 class="text-xl md:text-2xl font-extrabold text-slate-800 mb-2">האירוע נוצר בהצלחה!</h2>
+              <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-right space-y-2">
+                <p class="text-sm font-bold text-amber-900">רגע לפני שמתחילים — חשוב לקרוא 👇</p>
+                <p class="text-sm text-amber-800 leading-relaxed">
+                  המערכת שלנו לא עובדת עם סיסמאות. במקום זה, יש לכם <strong>קישור אישי</strong> שמוביל ישר לאירוע שלכם.
+                </p>
+                <p class="text-sm text-amber-800 leading-relaxed">
+                  אם תרצו לפתוח את המערכת ממכשיר אחר — למשל טלפון של בת הזוג, טאבלט, או מחשב אחר — תצטרכו את הקישור הזה. <strong>אנחנו לא יכולים לשלוח אותו לכם מחדש.</strong>
+                </p>
+                <p class="text-sm font-bold text-amber-900">⬇️ שלחו אותו לעצמכם עכשיו — ייקח 10 שניות!</p>
+              </div>
+            </div>
+
+            <!-- The link itself -->
+            <div class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-5 flex items-center gap-2 overflow-hidden">
+              <span class="text-xs text-slate-400 shrink-0">🔗</span>
+              <span id="saveStepLink" class="text-xs font-mono text-indigo-700 truncate flex-1"></span>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="space-y-2.5 mb-5">
+              <button onclick="saveStepWhatsApp()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold py-4 rounded-2xl text-sm transition shadow-md flex items-center justify-center gap-3">
+                <span class="text-xl">📲</span>
+                <div class="text-right">
+                  <div>שלח לעצמי בוואטסאפ</div>
+                  <div class="text-emerald-100 text-xs font-normal">הכי מהיר — הודעה מוכנה, רק לשלוח</div>
+                </div>
+              </button>
+              <button onclick="saveStepEmail()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-extrabold py-4 rounded-2xl text-sm transition shadow-md flex items-center justify-center gap-3">
+                <span class="text-xl">📧</span>
+                <div class="text-right">
+                  <div>שלח לעצמי במייל</div>
+                  <div class="text-blue-100 text-xs font-normal">פותח את המייל שלכם עם הודעה מוכנה</div>
+                </div>
+              </button>
+              <button onclick="saveStepCopy()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-2xl text-sm transition flex items-center justify-center gap-2 border border-slate-200">
+                <span>📋</span> העתק קישור ללוח
+              </button>
+            </div>
+
+            <!-- Proceed button -->
+            <button onclick="launchFromSave()" class="w-full py-3 text-sm font-bold text-slate-400 hover:text-slate-600 transition border border-dashed border-slate-200 rounded-2xl">
+              כבר שמרתי — קדימה למערכת ✓
+            </button>
+          </div>
             <div class="flex items-center gap-2 mb-2">
               <button onclick="showSetupStep1()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">←</button>
               <h2 class="text-lg md:text-xl font-extrabold text-slate-800">הצטרף לאירוע קיים</h2>
@@ -226,6 +273,7 @@ function renderSetupOverlay() {
 let _setupHasAccommodation = false;
 let _setupDateType = 'date';
 let _extraResps = [];
+let _pendingSetup = null;
 
 function showSetupStep1() {
     document.getElementById('setupStep1').classList.remove('hidden');
@@ -392,11 +440,57 @@ function completeSetup() {
     };
 
     saveSetup(setup);
+    _pendingSetup = setup;
+    showSetupSaveStep(setup);
+}
+
+function showSetupSaveStep(setup) {
+    ['setupStep1','setupStepCreate','setupStepJoin'].forEach(id => {
+        document.getElementById(id)?.classList.add('hidden');
+    });
+    const step = document.getElementById('setupStepSave');
+    if (step) step.classList.remove('hidden');
+
+    const link = buildShareLink(setup.eventId);
+    const el = document.getElementById('saveStepLink');
+    if (el) el.textContent = link;
+}
+
+function launchFromSave() {
+    const setup = _pendingSetup;
+    _pendingSetup = null;
     hideSetupOverlay();
     initAppWithSetup(setup);
     if (!localStorage.getItem(ONBOARDING_KEY)) {
         setTimeout(() => showOnboarding(), 400);
     }
+}
+
+function saveStepWhatsApp() {
+    if (!_pendingSetup) return;
+    const link = buildShareLink(_pendingSetup.eventId);
+    const name = _pendingSetup.boyName || 'בר המצווה';
+    const text = `🔑 הקישור שלי למערכת ניהול בר המצווה של ${name}:\n${link}\n\n(שמור אותו — זה הכניסה למערכת ממכשיר כלשהו)`;
+    sendWaText(text);
+}
+
+function saveStepEmail() {
+    if (!_pendingSetup) return;
+    const link = buildShareLink(_pendingSetup.eventId);
+    const name = _pendingSetup.boyName || 'בר המצווה';
+    const subject = encodeURIComponent(`הקישור שלי למערכת בר המצווה של ${name}`);
+    const body = encodeURIComponent(
+        `הקישור שלי למערכת ניהול בר המצווה:\n${link}\n\n` +
+        `שמור אותו — זוהי הדרך היחידה להכנס למערכת ממכשיר אחר.\n\n` +
+        `לפתיחה: פשוט לחץ על הקישור מכל דפדפן.`
+    );
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+}
+
+function saveStepCopy() {
+    if (!_pendingSetup) return;
+    const link = buildShareLink(_pendingSetup.eventId);
+    navigator.clipboard?.writeText(link).then(() => showToast('הקישור הועתק! הדביקו אותו בצ\'אט או בהערות 📋'));
 }
 
 function joinExistingEvent() {
