@@ -35,10 +35,10 @@
 <div id="onboardingModal" class="hidden fixed inset-0 z-50"></div>
 
 <!-- Main App -->
-<div id="mainApp" class="max-w-2xl mx-auto pb-24">
+<div id="mainApp" class="max-w-2xl mx-auto pb-24 md:mr-64 md:ml-0 md:max-w-none md:pb-8">
 
-  <!-- Hero Header -->
-  <div class="bg-gradient-to-br from-indigo-700 via-indigo-600 to-purple-700 text-white px-4 pt-6 pb-5 shadow-xl">
+  <!-- Hero Header — mobile only; desktop equivalent lives in the sidebar -->
+  <div class="md:hidden bg-gradient-to-br from-indigo-700 via-indigo-600 to-purple-700 text-white px-4 pt-6 pb-5 shadow-xl">
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-2">
         <div class="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-full text-xs">
@@ -83,7 +83,7 @@
   </div>
 
   <!-- Tab Title Bar -->
-  <div class="bg-white border-b border-slate-100 px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10">
+  <div class="bg-white border-b border-slate-100 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10">
     <span id="tabTitle" class="text-base font-extrabold text-slate-800">משימות</span>
     <div class="flex gap-2">
       <button onclick="fabAction()" class="bg-indigo-600 text-white text-xs font-bold px-3 py-1.5 rounded-full hover:bg-indigo-700 shadow-sm transition">+ הוסף</button>
@@ -91,213 +91,177 @@
   </div>
 
   <!-- ─── TASKS TAB ─── -->
-  <div data-tab="tasks" class="p-4 space-y-4">
-    <!-- View mode -->
-    <div class="flex items-center justify-between gap-3 flex-wrap">
-      <div class="flex gap-2" id="responsibleFilters"></div>
-      <div class="flex gap-1.5">
-        <button id="btnViewDynamic" onclick="setTaskViewMode('dynamic')" class="px-3 py-1 rounded-xl text-xs font-bold border bg-indigo-600 border-indigo-600 text-white shadow-sm">לפי דחיפות</button>
-        <button id="btnViewSorted" onclick="setTaskViewMode('sorted')" class="px-3 py-1 rounded-xl text-xs font-bold border bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200">לפי תאריך</button>
+  <div data-tab="tasks" class="p-4 md:p-6">
+    <div class="md:grid md:grid-cols-[320px_1fr] md:gap-6 md:items-start space-y-4 md:space-y-0">
+      <!-- Left panel: controls + add form -->
+      <div class="space-y-4 md:sticky md:top-16">
+        <!-- View mode -->
+        <div class="flex items-center justify-between gap-3 flex-wrap">
+          <div class="flex gap-2 flex-wrap" id="responsibleFilters"></div>
+          <div class="flex gap-1.5">
+            <button id="btnViewDynamic" onclick="setTaskViewMode('dynamic')" class="px-3 py-1 rounded-xl text-xs font-bold border bg-indigo-600 border-indigo-600 text-white shadow-sm">לפי דחיפות</button>
+            <button id="btnViewSorted" onclick="setTaskViewMode('sorted')" class="px-3 py-1 rounded-xl text-xs font-bold border bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200">לפי תאריך</button>
+          </div>
+        </div>
+        <!-- Add task form -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="text-xs font-bold text-slate-600">משימה חדשה</div>
+          <input type="text" id="newTaskTitle" placeholder="כותרת המשימה..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" onkeydown="if(event.key==='Enter')addNewTask()">
+          <div class="grid grid-cols-2 gap-2">
+            <input type="date" id="newTaskDeadline" class="p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <select id="newTaskResponsible" class="p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="לא הוגדר">לא הוגדר</option>
+            </select>
+          </div>
+          <button onclick="addNewTask()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף משימה</button>
+        </div>
+      </div>
+      <!-- Right panel: task lists -->
+      <div class="space-y-4">
+        <div id="dynamicTasksLayout" class="space-y-4"></div>
+        <div id="sortedTasksLayout" class="hidden space-y-2"></div>
       </div>
     </div>
-
-    <!-- Add task form -->
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="text-xs font-bold text-slate-600">משימה חדשה</div>
-      <input type="text" id="newTaskTitle" placeholder="כותרת המשימה..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" onkeydown="if(event.key==='Enter')addNewTask()">
-      <div class="grid grid-cols-2 gap-2">
-        <input type="date" id="newTaskDeadline" class="p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-        <select id="newTaskResponsible" class="p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          <option value="לא הוגדר">לא הוגדר</option>
-        </select>
-      </div>
-      <button onclick="addNewTask()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף משימה</button>
-    </div>
-
-    <!-- Dynamic layout -->
-    <div id="dynamicTasksLayout" class="space-y-4"></div>
-    <!-- Sorted layout -->
-    <div id="sortedTasksLayout" class="hidden space-y-2"></div>
   </div>
 
   <!-- ─── RSVP TAB ─── -->
-  <div data-tab="rsvp" class="hidden p-4 space-y-4">
-    <!-- Stats -->
-    <div class="grid grid-cols-4 gap-2">
-      <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
-        <div class="text-xl font-bold text-slate-800" id="rsvpTotalFamilies">0</div>
-        <div class="text-xs text-slate-500 mt-0.5">משפחות</div>
-      </div>
-      <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
-        <div class="text-xl font-bold text-indigo-600" id="rsvpTotalPeople">0</div>
-        <div class="text-xs text-slate-500 mt-0.5">מגיעים</div>
-      </div>
-      <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
-        <div class="text-xl font-bold text-purple-600" id="rsvpSleeping">0</div>
-        <div class="text-xs text-slate-500 mt-0.5">לנים</div>
-      </div>
-      <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
-        <div class="text-xl font-bold text-red-400" id="rsvpDeclined">0</div>
-        <div class="text-xs text-slate-500 mt-0.5">לא מגיעים</div>
-      </div>
-    </div>
-
-    <!-- Copy confirm link -->
-    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 flex items-center justify-between gap-3">
-      <div class="text-xs text-indigo-700">📲 שלחו לאורחים לינק לאישור הגעה</div>
-      <div class="flex gap-2 shrink-0">
-        <button onclick="copyConfirmLink()" class="text-xs font-bold text-indigo-700 bg-white border border-indigo-200 px-3 py-1.5 rounded-xl hover:bg-indigo-50 transition">📋 העתק</button>
-      </div>
-    </div>
-
-    <!-- Add guest form -->
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="text-xs font-bold text-slate-600">הוספת אורח/משפחה</div>
-      <input type="text" id="rsvpName" placeholder="שם משפחה / אורח..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-      <div class="grid grid-cols-3 gap-2">
-        <div class="space-y-1">
-          <label class="text-xs text-slate-500">מבוגרים</label>
-          <input type="number" id="rsvpAdults" min="0" value="2" class="w-full p-2 border border-slate-200 rounded-xl text-sm text-center focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-        </div>
-        <div class="space-y-1">
-          <label class="text-xs text-slate-500">ילדים</label>
-          <input type="number" id="rsvpKids" min="0" value="0" class="w-full p-2 border border-slate-200 rounded-xl text-sm text-center focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-        </div>
-        <div class="space-y-1">
-          <label class="text-xs text-slate-500">לינה</label>
-          <select id="rsvpSleep" class="w-full p-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            <option value="no">לא</option>
-            <option value="yes">כן</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Dietary -->
-      <div>
-        <div class="text-xs font-bold text-slate-600 mb-2">העדפות תזונה</div>
-        <div class="grid grid-cols-2 gap-2">
-          <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50">
-            <input type="checkbox" name="rsvpDietary" value="vegetarian" class="w-4 h-4 text-indigo-600">
-            <span class="text-xs">🥦 צמחוני</span>
-          </label>
-          <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50">
-            <input type="checkbox" name="rsvpDietary" value="vegan" class="w-4 h-4 text-indigo-600">
-            <span class="text-xs">🌿 טבעוני</span>
-          </label>
-          <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50">
-            <input type="checkbox" name="rsvpDietary" value="gluten-free" class="w-4 h-4 text-indigo-600">
-            <span class="text-xs">🌾 ללא גלוטן</span>
-          </label>
-          <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50">
-            <input type="checkbox" name="rsvpDietary" value="mehadrin" class="w-4 h-4 text-indigo-600">
-            <span class="text-xs">✡️ מהדרין</span>
-          </label>
-        </div>
-        <input type="text" id="rsvpDietaryNote" placeholder="הערה מיוחדת לאוכל..." class="mt-2 w-full p-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-      </div>
-
-      <!-- Baby cot + can't attend -->
-      <div class="flex gap-4">
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" id="rsvpBabyCot" class="w-4 h-4 text-indigo-600">
-          <span class="text-xs">🍼 צריך עריסה</span>
-        </label>
-        <label class="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" id="rsvpCantAttend" class="w-4 h-4 text-red-400">
-          <span class="text-xs text-red-500">לא מגיע/ה</span>
-        </label>
-      </div>
-
-      <!-- Meals -->
-      <div>
-        <div class="flex items-center justify-between mb-2">
-          <div class="text-xs font-bold text-slate-600">ארוחות</div>
-          <div class="flex gap-2">
-            <button onclick="toggleAllMeals(true)" class="text-xs text-indigo-600 hover:underline">הכל</button>
-            <button onclick="toggleAllMeals(false)" class="text-xs text-slate-400 hover:underline">נקה</button>
+  <div data-tab="rsvp" class="hidden p-4 md:p-6">
+    <div class="md:grid md:grid-cols-[360px_1fr] md:gap-6 md:items-start space-y-4 md:space-y-0">
+      <!-- Left panel: stats + link + add form -->
+      <div class="space-y-4 md:sticky md:top-16">
+        <!-- Stats -->
+        <div class="grid grid-cols-4 gap-2">
+          <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
+            <div class="text-xl font-bold text-slate-800" id="rsvpTotalFamilies">0</div>
+            <div class="text-xs text-slate-500 mt-0.5">משפחות</div>
+          </div>
+          <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
+            <div class="text-xl font-bold text-indigo-600" id="rsvpTotalPeople">0</div>
+            <div class="text-xs text-slate-500 mt-0.5">מגיעים</div>
+          </div>
+          <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
+            <div class="text-xl font-bold text-purple-600" id="rsvpSleeping">0</div>
+            <div class="text-xs text-slate-500 mt-0.5">לנים</div>
+          </div>
+          <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
+            <div class="text-xl font-bold text-red-400" id="rsvpDeclined">0</div>
+            <div class="text-xs text-slate-500 mt-0.5">לא מגיעים</div>
           </div>
         </div>
-        <div id="rsvpMealsContainer" class="flex flex-wrap gap-3"></div>
+        <!-- Copy confirm link -->
+        <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 flex items-center justify-between gap-3">
+          <div class="text-xs text-indigo-700">📲 שלחו לאורחים לינק לאישור הגעה</div>
+          <button onclick="copyConfirmLink()" class="text-xs font-bold text-indigo-700 bg-white border border-indigo-200 px-3 py-1.5 rounded-xl hover:bg-indigo-50 transition shrink-0">📋 העתק</button>
+        </div>
+        <!-- Add guest form -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="text-xs font-bold text-slate-600">הוספת אורח/משפחה</div>
+          <input type="text" id="rsvpName" placeholder="שם משפחה / אורח..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <div class="grid grid-cols-3 gap-2">
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500">מבוגרים</label>
+              <input type="number" id="rsvpAdults" min="0" value="2" class="w-full p-2 border border-slate-200 rounded-xl text-sm text-center focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500">ילדים</label>
+              <input type="number" id="rsvpKids" min="0" value="0" class="w-full p-2 border border-slate-200 rounded-xl text-sm text-center focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs text-slate-500">לינה</label>
+              <select id="rsvpSleep" class="w-full p-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <option value="no">לא</option>
+                <option value="yes">כן</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-slate-600 mb-2">העדפות תזונה</div>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50"><input type="checkbox" name="rsvpDietary" value="vegetarian" class="w-4 h-4 text-indigo-600"><span class="text-xs">🥦 צמחוני</span></label>
+              <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50"><input type="checkbox" name="rsvpDietary" value="vegan" class="w-4 h-4 text-indigo-600"><span class="text-xs">🌿 טבעוני</span></label>
+              <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50"><input type="checkbox" name="rsvpDietary" value="gluten-free" class="w-4 h-4 text-indigo-600"><span class="text-xs">🌾 ללא גלוטן</span></label>
+              <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50"><input type="checkbox" name="rsvpDietary" value="mehadrin" class="w-4 h-4 text-indigo-600"><span class="text-xs">✡️ מהדרין</span></label>
+            </div>
+            <input type="text" id="rsvpDietaryNote" placeholder="הערה מיוחדת לאוכל..." class="mt-2 w-full p-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="rsvpBabyCot" class="w-4 h-4 text-indigo-600"><span class="text-xs">🍼 צריך עריסה</span></label>
+            <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="rsvpCantAttend" class="w-4 h-4 text-red-400"><span class="text-xs text-red-500">לא מגיע/ה</span></label>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="text-xs font-bold text-slate-600">ארוחות</div>
+              <div class="flex gap-2">
+                <button onclick="toggleAllMeals(true)" class="text-xs text-indigo-600 hover:underline">הכל</button>
+                <button onclick="toggleAllMeals(false)" class="text-xs text-slate-400 hover:underline">נקה</button>
+              </div>
+            </div>
+            <div id="rsvpMealsContainer" class="flex flex-wrap gap-3"></div>
+          </div>
+          <button onclick="addNewRsvp()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף אורח</button>
+        </div>
       </div>
-
-      <button onclick="addNewRsvp()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף אורח</button>
+      <!-- Right panel: guest list -->
+      <div id="rsvpList" class="space-y-3"></div>
     </div>
-
-    <!-- Guest list -->
-    <div id="rsvpList" class="space-y-3"></div>
   </div>
 
   <!-- ─── BUDGET TAB ─── -->
-  <div data-tab="budget" class="hidden p-4 space-y-4">
-    <!-- Budget setup -->
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="flex items-center justify-between">
-        <div class="text-xs font-bold text-slate-600">תקציב מתוכנן (₪)</div>
-        <span class="text-xs text-slate-400">ריק = מעקב הוצאות בלבד</span>
-      </div>
-      <div class="flex gap-2">
-        <input type="number" id="budgetMaxInput" placeholder="לדוגמה: 40000" class="flex-1 p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-        <button onclick="updateMaxBudget(document.getElementById('budgetMaxInput').value)" class="bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700">שמור</button>
-      </div>
-    </div>
-
-    <!-- Progress (only if budget set) -->
-    <div id="budgetProgressSection" class="hidden bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="flex justify-between text-sm">
-        <span class="text-slate-600">תקציב: <span class="font-bold" id="budgetTotal">₪0</span></span>
-        <span class="text-emerald-600">נותר: <span class="font-bold" id="budgetRemaining">₪0</span></span>
-      </div>
-      <div class="h-3 bg-slate-100 rounded-full overflow-hidden">
-        <div id="budgetProgressBar" class="h-full rounded-full transition-all bg-emerald-500" style="width:0%"></div>
-      </div>
-      <div class="text-xs text-center text-slate-500" id="budgetProgressText"></div>
-    </div>
-
-    <!-- No budget info -->
-    <div id="noBudgetSection" class="bg-amber-50 border border-amber-100 rounded-2xl p-3">
-      <div class="text-xs text-amber-800">💡 לא הוגדר תקציב — המערכת עוקבת אחרי ההוצאות בלבד.</div>
-    </div>
-
-    <!-- Summary -->
-    <div class="grid grid-cols-2 gap-3">
-      <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
-        <div class="text-lg font-bold text-slate-800" id="budgetAllocated">₪0</div>
-        <div class="text-xs text-slate-500">סך הוצאות</div>
-      </div>
-      <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
-        <div class="text-lg font-bold text-indigo-600" id="budgetPaid">₪0</div>
-        <div class="text-xs text-slate-500">שולם בפועל</div>
-      </div>
-    </div>
-
-    <!-- Add expense form -->
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="text-xs font-bold text-slate-600">הוצאה חדשה</div>
-      <input type="text" id="newExpName" placeholder="שם ההוצאה..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-      <div class="grid grid-cols-3 gap-2">
-        <div>
-          <label class="text-xs text-slate-500">מחיר ליחידה</label>
-          <input type="number" id="newExpPricePerUnit" placeholder="₪" class="w-full p-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+  <div data-tab="budget" class="hidden p-4 md:p-6">
+    <div class="md:grid md:grid-cols-[340px_1fr] md:gap-6 md:items-start space-y-4 md:space-y-0">
+      <!-- Left panel: budget controls + add form -->
+      <div class="space-y-4 md:sticky md:top-16">
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="text-xs font-bold text-slate-600">תקציב מתוכנן (₪)</div>
+            <span class="text-xs text-slate-400">ריק = מעקב בלבד</span>
+          </div>
+          <div class="flex gap-2">
+            <input type="number" id="budgetMaxInput" placeholder="לדוגמה: 40000" class="flex-1 p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <button onclick="updateMaxBudget(document.getElementById('budgetMaxInput').value)" class="bg-indigo-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700">שמור</button>
+          </div>
         </div>
-        <div>
-          <label class="text-xs text-slate-500">כמות</label>
-          <input type="number" id="newExpQty" value="1" min="1" class="w-full p-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <div id="budgetProgressSection" class="hidden bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-600">תקציב: <span class="font-bold" id="budgetTotal">₪0</span></span>
+            <span class="text-emerald-600">נותר: <span class="font-bold" id="budgetRemaining">₪0</span></span>
+          </div>
+          <div class="h-3 bg-slate-100 rounded-full overflow-hidden">
+            <div id="budgetProgressBar" class="h-full rounded-full transition-all bg-emerald-500" style="width:0%"></div>
+          </div>
+          <div class="text-xs text-center text-slate-500" id="budgetProgressText"></div>
         </div>
-        <div>
-          <label class="text-xs text-slate-500">שולם</label>
-          <input type="number" id="newExpPaid" placeholder="₪" class="w-full p-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <div id="noBudgetSection" class="bg-amber-50 border border-amber-100 rounded-2xl p-3">
+          <div class="text-xs text-amber-800">💡 לא הוגדר תקציב — מעקב הוצאות בלבד.</div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
+            <div class="text-lg font-bold text-slate-800" id="budgetAllocated">₪0</div>
+            <div class="text-xs text-slate-500">סך הוצאות</div>
+          </div>
+          <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
+            <div class="text-lg font-bold text-indigo-600" id="budgetPaid">₪0</div>
+            <div class="text-xs text-slate-500">שולם בפועל</div>
+          </div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="text-xs font-bold text-slate-600">הוצאה חדשה</div>
+          <input type="text" id="newExpName" placeholder="שם ההוצאה..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <div class="grid grid-cols-3 gap-2">
+            <div><label class="text-xs text-slate-500">מחיר ליחידה</label><input type="number" id="newExpPricePerUnit" placeholder="₪" class="w-full p-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></div>
+            <div><label class="text-xs text-slate-500">כמות</label><input type="number" id="newExpQty" value="1" min="1" class="w-full p-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></div>
+            <div><label class="text-xs text-slate-500">שולם</label><input type="number" id="newExpPaid" placeholder="₪" class="w-full p-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <select id="newExpMethod" class="p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"><option>מזומן</option><option>העברה</option><option>אשראי</option></select>
+            <input type="date" id="newExpDate" class="p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          </div>
+          <button onclick="addNewExpense()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף הוצאה</button>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-2">
-        <select id="newExpMethod" class="p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          <option>מזומן</option><option>העברה</option><option>אשראי</option>
-        </select>
-        <input type="date" id="newExpDate" class="p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-      </div>
-      <button onclick="addNewExpense()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף הוצאה</button>
+      <!-- Right panel: budget list -->
+      <div id="budgetList" class="space-y-3"></div>
     </div>
-
-    <div id="budgetList" class="space-y-3"></div>
   </div>
 
   <!-- ─── SHOPPING TAB ─── -->
@@ -555,12 +519,19 @@
         <button onclick="importEventData()" class="flex-1 bg-white border border-slate-300 text-slate-700 text-xs font-bold py-2.5 rounded-xl hover:bg-slate-50 shadow-sm transition">⬆️ שחזר מגיבוי</button>
       </div>
     </div>
+
+    <!-- Danger Zone -->
+    <div class="bg-red-50 border border-red-200 rounded-2xl p-4 shadow-sm space-y-3">
+      <div class="text-sm font-extrabold text-red-800">⚠️ מחיקת האירוע</div>
+      <p class="text-xs text-slate-600 leading-relaxed">מחיקה אינה ניתנת לביטול. לאחריה תוכלו ליצור אירוע חדש.</p>
+      <button onclick="openDeleteEventModal()" class="w-full bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-2.5 rounded-xl transition">🗑 מחק / עזוב אירוע</button>
+    </div>
   </div>
 
 </div><!-- end mainApp -->
 
-<!-- ─── Bottom Navigation ───────────────────────────────────────────────────── -->
-<nav class="fixed bottom-0 right-0 left-0 bg-white border-t border-slate-200 z-30 shadow-lg max-w-2xl mx-auto">
+<!-- ─── Bottom Navigation (mobile only) ─────────────────────────────────────── -->
+<nav class="md:hidden fixed bottom-0 right-0 left-0 bg-white border-t border-slate-200 z-30 shadow-lg max-w-2xl mx-auto">
   <div class="flex items-center justify-around py-1.5">
     <button data-tabnav="tasks" onclick="switchTab('tasks')" class="flex flex-col items-center px-2 py-1 text-indigo-600 font-bold">
       <span class="text-xl">✅</span>
@@ -585,8 +556,8 @@
   </div>
 </nav>
 
-<!-- More Tabs Modal -->
-<div id="moreTabsModal" class="hidden fixed inset-0 bg-black/50 z-40 flex items-end" onclick="this.classList.add('hidden')">
+<!-- More Tabs Modal (mobile only) -->
+<div id="moreTabsModal" class="md:hidden hidden fixed inset-0 bg-black/50 z-40 flex items-end" onclick="this.classList.add('hidden')">
   <div class="bg-white w-full max-w-2xl mx-auto rounded-t-3xl p-5 pb-8 grid grid-cols-3 gap-3" onclick="event.stopPropagation()">
     <button onclick="switchTab('rooms');document.getElementById('moreTabsModal').classList.add('hidden')" class="flex flex-col items-center gap-1.5 bg-slate-50 rounded-2xl p-4 hover:bg-indigo-50">
       <span class="text-2xl">🛏</span><span class="text-xs font-bold text-slate-700">שיבוץ לינה</span>
@@ -678,6 +649,7 @@
 </div>
 
 <!-- ─── Scripts ────────────────────────────────────────────────────────────── -->
+<script src="js/firebase-credentials.js" onerror="console.warn('firebase-credentials.js not found — running in local-only mode.')"></script>
 <script src="js/config.js"></script>
 <script src="js/parasha.js"></script>
 <script src="js/setup.js"></script>
@@ -690,5 +662,89 @@ document.addEventListener('DOMContentLoaded', function() {
     if (expDate) expDate.value = new Date().toISOString().split('T')[0];
 });
 </script>
+
+<!-- ─── Desktop Sidebar (md+) ────────────────────────────────────────────── -->
+<aside id="desktopSidebar" class="hidden md:flex flex-col fixed right-0 top-0 h-full w-64 bg-gradient-to-b from-indigo-800 to-indigo-900 text-white z-20 shadow-2xl overflow-y-auto">
+  <!-- App header -->
+  <div class="p-4 border-b border-white/10 shrink-0">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="text-xl">✡️</span>
+      <span class="text-sm font-extrabold opacity-90">מערכת בר מצווה</span>
+    </div>
+    <div class="bg-white/10 rounded-2xl p-3 text-center mb-3">
+      <div id="sidebarCountdown" class="text-4xl font-black leading-none mb-0.5">—</div>
+      <div class="text-indigo-300 text-xs">ימים לאירוע</div>
+    </div>
+    <div class="text-center">
+      <div class="font-extrabold text-sm" id="sidebarBoyName">בר מצווה</div>
+      <div class="text-indigo-300 text-xs mt-0.5" id="sidebarEventDate"></div>
+    </div>
+    <div class="flex items-center gap-1.5 mt-2 text-xs text-indigo-400">
+      <div id="sidebarCloudDot" class="w-2 h-2 rounded-full bg-slate-500 shrink-0"></div>
+      <span id="sidebarCloudLabel">מקומי בלבד</span>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div class="grid grid-cols-3 gap-1.5 px-3 py-3 border-b border-white/10 shrink-0">
+    <div class="bg-white/10 rounded-xl p-2 text-center">
+      <div class="text-xs font-bold leading-tight"><span id="sidebarStatDone">0</span>/<span id="sidebarStatTotal">0</span></div>
+      <div class="text-xs opacity-60 mt-0.5">משימות</div>
+    </div>
+    <div class="bg-white/10 rounded-xl p-2 text-center">
+      <div class="text-xs font-bold leading-tight" id="sidebarStatGuests">0</div>
+      <div class="text-xs opacity-60 mt-0.5">אורחים</div>
+    </div>
+    <div class="bg-white/10 rounded-xl p-2 text-center">
+      <div class="text-xs font-bold leading-tight truncate" id="sidebarStatSpent">₪0</div>
+      <div class="text-xs opacity-60 mt-0.5">הוצאות</div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 p-2 space-y-0.5 overflow-y-auto">
+    <button data-sidernav="tasks"     onclick="switchTab('tasks')"     class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition text-indigo-200 hover:text-white"><span class="text-base w-5 text-center">✅</span> משימות</button>
+    <button data-sidernav="rsvp"      onclick="switchTab('rsvp')"      class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition text-indigo-200 hover:text-white"><span class="text-base w-5 text-center">👥</span> אורחים</button>
+    <button data-sidernav="budget"    onclick="switchTab('budget')"    class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition text-indigo-200 hover:text-white"><span class="text-base w-5 text-center">💰</span> תקציב</button>
+    <button data-sidernav="shopping"  onclick="switchTab('shopping')"  class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition text-indigo-200 hover:text-white"><span class="text-base w-5 text-center">🛒</span> קניות</button>
+    <div class="border-t border-white/10 my-2"></div>
+    <button data-sidernav="rooms"     onclick="switchTab('rooms')"     class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition text-indigo-200 hover:text-white"><span class="text-base w-5 text-center">🛏</span> שיבוץ לינה</button>
+    <button data-sidernav="calls"     onclick="switchTab('calls')"     class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition text-indigo-200 hover:text-white"><span class="text-base w-5 text-center">📞</span> בירורים</button>
+    <button data-sidernav="logistics" onclick="switchTab('logistics')" class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition text-indigo-200 hover:text-white"><span class="text-base w-5 text-center">🎒</span> לוגיסטיקה</button>
+    <button data-sidernav="menu"      onclick="switchTab('menu')"      class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition text-indigo-200 hover:text-white"><span class="text-base w-5 text-center">🍽️</span> תפריט</button>
+    <button data-sidernav="schedule"  onclick="switchTab('schedule')"  class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition text-indigo-200 hover:text-white"><span class="text-base w-5 text-center">🗓</span> לוח זמנים</button>
+    <button data-sidernav="drinks"    onclick="switchTab('drinks')"    class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition text-indigo-200 hover:text-white"><span class="text-base w-5 text-center">🥤</span> מחשבון שתייה</button>
+    <div class="border-t border-white/10 my-2"></div>
+    <button data-sidernav="settings"  onclick="switchTab('settings')"  class="sidebar-nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold hover:bg-white/10 transition text-indigo-200 hover:text-white"><span class="text-base w-5 text-center">⚙️</span> הגדרות</button>
+  </nav>
+
+  <!-- Feedback button -->
+  <div class="p-3 border-t border-white/10 shrink-0">
+    <button onclick="openFeedbackModal()" class="w-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold py-2.5 rounded-xl transition">💬 משוב</button>
+  </div>
+</aside>
+
+<!-- ─── Delete Event Modal ────────────────────────────────────────────────── -->
+<div id="deleteEventModal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
+    <div class="bg-gradient-to-r from-red-500 to-rose-600 text-white p-5 text-center">
+      <div class="text-3xl mb-2">🗑️</div>
+      <h3 class="text-lg font-extrabold">מחיקת / עזיבת האירוע</h3>
+      <p class="text-red-200 text-xs mt-1">בחרו מה לעשות עם הנתונים</p>
+    </div>
+    <div class="p-5 space-y-3">
+      <button onclick="deleteEvent('local')" class="w-full bg-amber-50 border-2 border-amber-200 text-right px-4 py-4 rounded-2xl hover:bg-amber-100 transition">
+        <div class="font-bold text-amber-800 text-sm">🚪 צא מהאירוע (השאר בענן)</div>
+        <div class="text-xs text-amber-600 mt-1">מוחק מהמכשיר הזה בלבד. מארגנים אחרים לא יושפעו.</div>
+      </button>
+      <button onclick="deleteEvent('all')" class="w-full bg-red-50 border-2 border-red-200 text-right px-4 py-4 rounded-2xl hover:bg-red-100 transition">
+        <div class="font-bold text-red-800 text-sm">🗑️ מחק הכל (כולל ענן)</div>
+        <div class="text-xs text-red-500 mt-1">מוחק גם מהמכשיר וגם מ-Firebase. כל הגישה לאירוע תאבד.</div>
+      </button>
+      <button onclick="document.getElementById('deleteEventModal').classList.add('hidden')" class="w-full py-2.5 text-xs font-bold text-slate-500 hover:text-slate-700 border border-slate-200 rounded-xl">ביטול</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

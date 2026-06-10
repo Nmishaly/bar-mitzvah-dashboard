@@ -233,4 +233,10 @@ function updateCloudStatus(connected) {
     if (sDesc) sDesc.textContent = connected
         ? 'הנתונים מסונכרנים בזמן אמת עם כל בני המשפחה'
         : 'הנתונים נשמרים במכשיר זה בלבד — גבו את הנתונים מטה';
+
+    // Desktop sidebar cloud dot
+    const sbDot = document.getElementById('sidebarCloudDot');
+    const sbLabel = document.getElementById('sidebarCloudLabel');
+    if (sbDot) sbDot.className = `w-2 h-2 rounded-full shrink-0 ${connected ? 'bg-emerald-400' : 'bg-slate-500'}`;
+    if (sbLabel) sbLabel.textContent = connected ? 'מחובר לענן' : 'מקומי בלבד';
 }

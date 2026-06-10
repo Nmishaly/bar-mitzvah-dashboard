@@ -27,11 +27,20 @@ function switchTab(tabName) {
         const isActive = el.dataset.tab === tabName;
         el.classList.toggle('hidden', !isActive);
     });
+    // Mobile bottom nav
     document.querySelectorAll('[data-tabnav]').forEach(btn => {
         const isActive = btn.dataset.tabnav === tabName;
         btn.classList.toggle('text-indigo-600', isActive);
         btn.classList.toggle('text-slate-400', !isActive);
         btn.classList.toggle('font-bold', isActive);
+    });
+    // Desktop sidebar nav
+    document.querySelectorAll('[data-sidernav]').forEach(btn => {
+        const isActive = btn.dataset.sidernav === tabName;
+        btn.classList.toggle('bg-white/20', isActive);
+        btn.classList.toggle('text-white', isActive);
+        btn.classList.toggle('font-bold', isActive);
+        btn.classList.toggle('text-indigo-200', !isActive);
     });
     const titles = {
         tasks:'משימות', rsvp:'אישורי הגעה', budget:'תקציב', shopping:'קניות',
@@ -72,10 +81,12 @@ function updateHeaderFromSetup() {
     const cfg = getEventConfig();
     if (!cfg) return;
     safeSetText('headerBoyName', cfg.boyName);
+    safeSetText('sidebarBoyName', cfg.boyName);
     const dateStr = cfg.useParasha
         ? `פרשת ${cfg.parashaName}`
         : formatHebrewDate(cfg.eventDate);
     safeSetText('headerEventDate', dateStr);
+    safeSetText('sidebarEventDate', dateStr);
     updateCountdown();
 }
 
@@ -97,6 +108,7 @@ function updateCountdown() {
         el.textContent = Math.abs(diff);
         if (label) label.textContent = 'ימים מאז האירוע';
     }
+    safeSetText('sidebarCountdown', el.textContent);
 }
 
 // ─── Stats ────────────────────────────────────────────────────────────────────
@@ -111,6 +123,11 @@ function calculateStats() {
     safeSetText('statTotalTasks', totalTasks);
     safeSetText('statGuests', totalGuests);
     safeSetText('statSpent', `₪${totalSpent.toLocaleString()}`);
+    // Mirror to desktop sidebar
+    safeSetText('sidebarStatDone', doneTasks);
+    safeSetText('sidebarStatTotal', totalTasks);
+    safeSetText('sidebarStatGuests', totalGuests);
+    safeSetText('sidebarStatSpent', `₪${totalSpent.toLocaleString()}`);
 }
 
 // ─── Tasks ────────────────────────────────────────────────────────────────────

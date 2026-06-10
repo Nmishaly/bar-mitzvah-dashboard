@@ -1,15 +1,10 @@
 // ─── Firebase Configuration ──────────────────────────────────────────────────
-// Replace these values with your own Firebase project credentials.
-// See the Settings tab in the app for step-by-step instructions.
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyBchylz1acekza_mDKtOYqnyNU-1KBu4mM",
-  authDomain: "bar-mitzvah-dashboard.firebaseapp.com",
-  projectId: "bar-mitzvah-dashboard",
-  storageBucket: "bar-mitzvah-dashboard.firebasestorage.app",
-  messagingSenderId: "708559837499",
-  appId: "1:708559837499:web:facdb8096c6c9543a67f1e",
-  measurementId: "G-X5QHSBXDKX"
-};
+// Credentials are loaded from js/firebase-credentials.js (gitignored).
+// Copy js/firebase-credentials.example.js → js/firebase-credentials.js and fill in your values.
+// If the file is missing the app runs in local-only mode (no cloud sync).
+const FIREBASE_CONFIG = (typeof FIREBASE_CREDENTIALS !== 'undefined' && FIREBASE_CREDENTIALS?.apiKey)
+  ? FIREBASE_CREDENTIALS
+  : {};
 
 // ─── Feedback Settings ────────────────────────────────────────────────────────
 // Update these with your actual contact details
