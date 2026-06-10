@@ -160,12 +160,12 @@
 
       <!-- ── Step 3: Summary + Submit ── -->
       <div id="stepSection3" class="step-section hidden">
-        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-100 px-6 py-4 text-center">
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-indigo-100 px-6 py-4 text-center">
           <div class="text-base font-extrabold text-slate-800">שלב 3 מתוך 3 — סיכום ואישור</div>
         </div>
         <div class="p-6 space-y-4">
           <div id="summaryCard" class="bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-2 text-sm text-slate-700"></div>
-          <button id="submitBtn" onclick="submitRsvp()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg">
+          <button id="submitBtn" onclick="submitRsvp()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg">
             אישור הגעה ✓
           </button>
           <button onclick="goToStep(2)" class="w-full py-2 rounded-2xl text-sm font-bold text-slate-500 hover:text-slate-700 transition">→ חזרה לעריכה</button>
@@ -195,6 +195,7 @@
 
 </div>
 
+<script src="js/firebase-credentials.js" onerror="console.warn('firebase-credentials.js not found — running in local-only mode.')"></script>
 <script src="js/config.js"></script>
 <script src="js/parasha.js"></script>
 <script>

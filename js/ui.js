@@ -27,11 +27,20 @@ function switchTab(tabName) {
         const isActive = el.dataset.tab === tabName;
         el.classList.toggle('hidden', !isActive);
     });
+    // Mobile bottom nav
     document.querySelectorAll('[data-tabnav]').forEach(btn => {
         const isActive = btn.dataset.tabnav === tabName;
         btn.classList.toggle('text-indigo-600', isActive);
         btn.classList.toggle('text-slate-400', !isActive);
         btn.classList.toggle('font-bold', isActive);
+    });
+    // Desktop sidebar nav
+    document.querySelectorAll('[data-sidernav]').forEach(btn => {
+        const isActive = btn.dataset.sidernav === tabName;
+        btn.classList.toggle('bg-white/20', isActive);
+        btn.classList.toggle('text-white', isActive);
+        btn.classList.toggle('font-bold', isActive);
+        btn.classList.toggle('text-indigo-200', !isActive);
     });
     const titles = {
         tasks:'משימות', rsvp:'אישורי הגעה', budget:'תקציב', shopping:'קניות',
@@ -72,10 +81,12 @@ function updateHeaderFromSetup() {
     const cfg = getEventConfig();
     if (!cfg) return;
     safeSetText('headerBoyName', cfg.boyName);
+    safeSetText('sidebarBoyName', cfg.boyName);
     const dateStr = cfg.useParasha
         ? `פרשת ${cfg.parashaName}`
         : formatHebrewDate(cfg.eventDate);
     safeSetText('headerEventDate', dateStr);
+    safeSetText('sidebarEventDate', dateStr);
     updateCountdown();
 }
 
@@ -97,6 +108,7 @@ function updateCountdown() {
         el.textContent = Math.abs(diff);
         if (label) label.textContent = 'ימים מאז האירוע';
     }
+    safeSetText('sidebarCountdown', el.textContent);
 }
 
 // ─── Stats ────────────────────────────────────────────────────────────────────
@@ -111,6 +123,11 @@ function calculateStats() {
     safeSetText('statTotalTasks', totalTasks);
     safeSetText('statGuests', totalGuests);
     safeSetText('statSpent', `₪${totalSpent.toLocaleString()}`);
+    // Mirror to desktop sidebar
+    safeSetText('sidebarStatDone', doneTasks);
+    safeSetText('sidebarStatTotal', totalTasks);
+    safeSetText('sidebarStatGuests', totalGuests);
+    safeSetText('sidebarStatSpent', `₪${totalSpent.toLocaleString()}`);
 }
 
 // ─── Tasks ────────────────────────────────────────────────────────────────────
@@ -391,6 +408,15 @@ function renderShopping() {
     const progressBar = document.getElementById('shopProgressBar');
     if (progressBar) progressBar.style.width = (shopping.length ? Math.round(done/shopping.length*100) : 0) + '%';
 
+    if (!shopping.length) {
+        container.innerHTML = `<div class="text-center py-10 text-slate-400">
+            <div class="text-4xl mb-3">🛒</div>
+            <div class="font-semibold text-sm">רשימת הקניות ריקה</div>
+            <div class="text-xs mt-1">הוסיפו פריטים באמצעות הטופס למעלה</div>
+        </div>`;
+        return;
+    }
+
     if (shopViewMode === 'category') {
         const cats = {};
         shopping.forEach(item => {
@@ -442,29 +468,37 @@ function renderRooms() {
 
     const typeLabels = { villa:'🏠 וילה', hotel:'🏨 מלון / בית הארחה', friends:'🏘️ חברים / שכנים' };
 
-    container.innerHTML = rooms.map(r => {
-        const full = (r.guests||[]).length >= r.capacity;
-        return `
-        <div class="bg-white border ${full?'border-amber-200 bg-amber-50':'border-slate-100'} rounded-2xl p-4 shadow-sm space-y-3">
-            <div class="flex items-center justify-between">
-                <div>
-                    <div class="font-bold text-slate-800">${esc(r.name)}</div>
-                    <div class="text-xs text-slate-500">${typeLabels[r.type]||r.type||''} · ${(r.guests||[]).length}/${r.capacity} אורחים</div>
-                </div>
-                <button onclick="deleteRoom('${r.id}')" class="text-slate-300 hover:text-red-500 p-1.5 rounded-xl hover:bg-red-50">🗑</button>
-            </div>
-            <div class="flex flex-wrap gap-1.5">
-                ${(r.guests||[]).map((g,i)=>`<div class="flex items-center gap-1 bg-indigo-50 text-indigo-800 text-xs font-semibold px-2.5 py-1 rounded-full">
-                    ${esc(g)} <button onclick="removeGuestFromRoom('${r.id}',${i})" class="text-indigo-400 hover:text-red-500 ml-1">✕</button>
-                </div>`).join('')}
-                ${full ? '<span class="text-xs text-amber-600 font-bold">• תפוס</span>' : ''}
-            </div>
-            ${!full ? `<div class="flex gap-2">
-                <input id="guestInput_${r.id}" type="text" placeholder="הוסף אורח..." class="flex-1 p-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" onkeydown="if(event.key==='Enter')addGuestToRoom('${r.id}')">
-                <button onclick="addGuestToRoom('${r.id}')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-sm font-bold hover:bg-indigo-700">+</button>
-            </div>` : ''}
+    if (!rooms.length) {
+        container.innerHTML = `<div class="text-center py-8 text-slate-400">
+            <div class="text-4xl mb-3">🏠</div>
+            <div class="font-semibold text-sm">אין חדרים / מקומות לינה</div>
+            <div class="text-xs mt-1">הוסיפו חדרים באמצעות הטופס למעלה</div>
         </div>`;
-    }).join('');
+    } else {
+        container.innerHTML = rooms.map(r => {
+            const full = (r.guests||[]).length >= r.capacity;
+            return `
+            <div class="bg-white border ${full?'border-amber-200 bg-amber-50':'border-slate-100'} rounded-2xl p-4 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="font-bold text-slate-800">${esc(r.name)}</div>
+                        <div class="text-xs text-slate-500">${typeLabels[r.type]||r.type||''} · ${(r.guests||[]).length}/${r.capacity} אורחים</div>
+                    </div>
+                    <button onclick="deleteRoom('${r.id}')" class="text-slate-300 hover:text-red-500 p-1.5 rounded-xl hover:bg-red-50">🗑</button>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                    ${(r.guests||[]).map((g,i)=>`<div class="flex items-center gap-1 bg-indigo-50 text-indigo-800 text-xs font-semibold px-2.5 py-1 rounded-full">
+                        ${esc(g)} <button onclick="removeGuestFromRoom('${r.id}',${i})" class="text-indigo-400 hover:text-red-500 ml-1">✕</button>
+                    </div>`).join('')}
+                    ${full ? '<span class="text-xs text-amber-600 font-bold">• תפוס</span>' : ''}
+                </div>
+                ${!full ? `<div class="flex gap-2">
+                    <input id="guestInput_${r.id}" type="text" placeholder="הוסף אורח..." class="flex-1 p-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" onkeydown="if(event.key==='Enter')addGuestToRoom('${r.id}')">
+                    <button onclick="addGuestToRoom('${r.id}')" class="bg-indigo-600 text-white px-3 py-2 rounded-xl text-sm font-bold hover:bg-indigo-700">+</button>
+                </div>` : ''}
+            </div>`;
+        }).join('');
+    }
 
     // External locations
     const extContainer = document.getElementById('extLocationsList');
@@ -495,6 +529,14 @@ function renderCalls() {
     if (!container) return;
     const done = calls.filter(c=>c.done).length;
     safeSetText('callsProgress', `${done}/${calls.length} הושלמו`);
+    if (!calls.length) {
+        container.innerHTML = `<div class="text-center py-10 text-slate-400">
+            <div class="text-4xl mb-3">📞</div>
+            <div class="font-semibold text-sm">אין בירורים ברשימה</div>
+            <div class="text-xs mt-1">הוסיפו בירורים שצריך לבצע באמצעות הטופס למעלה</div>
+        </div>`;
+        return;
+    }
     container.innerHTML = calls.map(c => `
     <div class="bg-white border ${c.done?'border-emerald-200 bg-emerald-50':'border-slate-100'} rounded-2xl p-4 shadow-sm space-y-2">
         <div class="flex items-start gap-3">
@@ -653,11 +695,11 @@ function renderSchedule() {
                     <button onclick="saveEditSchedule('${item.id}')" class="px-2 py-1 rounded-lg bg-indigo-600 text-white">שמור</button>
                 </div>
             </div>`;
-            return `<div class="bg-white border border-slate-100 rounded-xl p-2.5 shadow-sm text-xs space-y-0.5 cursor-pointer hover:border-indigo-200" onclick="editingScheduleId='${item.id}';renderSchedule()">
-                ${item.time ? `<div class="font-bold text-indigo-700">${item.time}</div>` : ''}
+            return `<div class="bg-white border border-slate-100 rounded-xl p-3 shadow-sm text-sm space-y-0.5 cursor-pointer hover:border-indigo-200" onclick="editingScheduleId='${item.id}';renderSchedule()">
+                ${item.time ? `<div class="font-bold text-indigo-700 text-xs">${item.time}</div>` : ''}
                 <div class="font-semibold text-slate-800">${esc(item.title)}</div>
-                ${item.speaker ? `<div class="text-slate-500">${esc(item.speaker)}</div>` : ''}
-                <button onclick="event.stopPropagation();deleteScheduleItem('${item.id}')" class="text-slate-300 hover:text-red-400 float-left">✕</button>
+                ${item.speaker ? `<div class="text-xs text-slate-500">${esc(item.speaker)}</div>` : ''}
+                <button onclick="event.stopPropagation();deleteScheduleItem('${item.id}')" class="text-slate-300 hover:text-red-400 float-left text-xs">✕</button>
             </div>`;
         }).join('');
         return `<div class="bg-slate-50 rounded-2xl p-3 space-y-2 flex-1">

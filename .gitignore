@@ -1,0 +1,12 @@
+# Firebase credentials — never commit this file
+js/firebase-credentials.js
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Editor artifacts
+.vscode/
+.idea/
+*.swp
+*.swo

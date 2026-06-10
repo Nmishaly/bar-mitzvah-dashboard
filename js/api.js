@@ -21,6 +21,7 @@ async function connectToFirebaseWithSetup(setup, joinedExisting = false) {
 
     const hasConfig = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId;
     if (!hasConfig) {
+        console.warn('[Firebase] No credentials — running local-only. Check js/firebase-credentials.js exists and has apiKey.');
         updateCloudStatus(false);
         return;
     }
@@ -50,7 +51,10 @@ async function connectToFirebaseWithSetup(setup, joinedExisting = false) {
 
         startFirebaseListeners();
     } catch (e) {
-        console.error('Firebase connect error:', e);
+        console.error('[Firebase] Connection failed:', e.code, e.message);
+        if (e.code === 'auth/configuration-not-found' || e.code === 'auth/operation-not-allowed') {
+            console.warn('[Firebase] Anonymous Authentication is not enabled. Enable it at: Firebase Console → Authentication → Sign-in method → Anonymous');
+        }
         updateCloudStatus(false);
     }
 }
@@ -233,4 +237,10 @@ function updateCloudStatus(connected) {
     if (sDesc) sDesc.textContent = connected
         ? 'הנתונים מסונכרנים בזמן אמת עם כל בני המשפחה'
         : 'הנתונים נשמרים במכשיר זה בלבד — גבו את הנתונים מטה';
+
+    // Desktop sidebar cloud dot
+    const sbDot = document.getElementById('sidebarCloudDot');
+    const sbLabel = document.getElementById('sidebarCloudLabel');
+    if (sbDot) sbDot.className = `w-2 h-2 rounded-full shrink-0 ${connected ? 'bg-emerald-400' : 'bg-slate-500'}`;
+    if (sbLabel) sbLabel.textContent = connected ? 'מחובר לענן' : 'מקומי בלבד';
 }

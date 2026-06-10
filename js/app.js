@@ -444,7 +444,7 @@ function setShopViewMode(mode) {
 function toggleShopSelectMode() {
     shopSelectMode = !shopSelectMode; selectedShopItems.clear();
     const btn = document.getElementById('btnShopSelectMode');
-    if (btn) btn.textContent = shopSelectMode ? '✕ ביטול' : '☑ בחר מרובה';
+    if (btn) btn.textContent = shopSelectMode ? '✕ ביטול' : '☑ בחר';
     document.getElementById('batchBuyBar')?.classList.toggle('hidden', !shopSelectMode);
     renderShopping();
 }
@@ -922,6 +922,50 @@ function shareConfirmWhatsApp() {
     const dateStr = cfg.useParasha ? `פרשת ${cfg.parashaName}` : formatHebrewDate(cfg.eventDate);
     const text = `🎉 הוזמנתם לבר מצווה של ${cfg.boyName}!\n📅 ${dateStr}\n\nאנא אשרו הגעה דרך הלינק:\n${link}`;
     sendWaText(text);
+}
+
+// ─── Delete Event ─────────────────────────────────────────────────────────────
+
+const LOCAL_STORAGE_KEYS = [
+    'bm_tasks','bm_shopping','bm_calls','bm_rooms','bm_rsvps','bm_budget',
+    'bm_logistics','bm_menu','bm_schedule','bm_externalLocations',
+    'bm_setup','bm_taskViewMode'
+];
+
+function openDeleteEventModal() {
+    document.getElementById('deleteEventModal')?.classList.remove('hidden');
+}
+
+async function deleteEvent(scope) {
+    const confirmMsg = scope === 'all'
+        ? 'מחיקה מהענן אינה ניתנת לביטול — גם שאר המארגנים יאבדו גישה. בטוח/ה?'
+        : 'לצאת מהאירוע במכשיר זה? הנתונים בענן ישמרו עבור מארגנים אחרים.';
+    if (!confirm(confirmMsg)) return;
+
+    document.getElementById('deleteEventModal')?.classList.add('hidden');
+
+    if (scope === 'all' && isCloudConnected && db) {
+        showToast('מוחק נתונים מהענן...', 4000);
+        try {
+            const { collection, getDocs, deleteDoc } = await import(FIREBASE_MODULES.firestore);
+            const setup = getSetup();
+            if (setup?.eventId) {
+                const cols = ['tasks','shopping','calls','rooms','externalLocations',
+                              'rsvps','budget','logistics','menu','schedule','_settings'];
+                for (const col of cols) {
+                    const snap = await getDocs(collection(db, `events/${setup.eventId}/${col}`));
+                    for (const d of snap.docs) await deleteDoc(d.ref);
+                }
+            }
+        } catch(e) {
+            console.error('Firebase delete error:', e);
+            showToast('שגיאה במחיקה מהענן. הנתונים המקומיים נמחקו.');
+        }
+    }
+
+    LOCAL_STORAGE_KEYS.forEach(k => localStorage.removeItem(k));
+    showToast('האירוע נמחק. מאתחל...');
+    setTimeout(() => window.location.reload(), 1500);
 }
 
 // ─── Data Export / Import ─────────────────────────────────────────────────────
