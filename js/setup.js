@@ -42,8 +42,8 @@ function renderSetupOverlay() {
     const overlay = document.getElementById('setupOverlay');
     if (!overlay) return;
     overlay.innerHTML = `
-    <div class="min-h-screen bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 flex flex-col items-center justify-start md:justify-center p-4 py-8">
-      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg md:max-w-4xl overflow-hidden flex flex-col md:flex-row my-4 md:my-0">
+    <div class="py-6 px-4 md:min-h-full md:flex md:items-center md:justify-center">
+      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg md:max-w-4xl overflow-hidden flex flex-col md:flex-row mx-auto">
 
         <!-- Left decorative panel (desktop only) -->
         <div class="hidden md:flex flex-col justify-between bg-gradient-to-b from-indigo-600 to-purple-700 text-white p-10 w-80 shrink-0">
