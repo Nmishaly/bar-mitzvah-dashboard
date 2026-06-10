@@ -52,7 +52,7 @@
 
     <!-- Countdown Hero -->
     <div class="text-center mb-4">
-      <div id="countdownDays" class="text-7xl font-black countdown-glow leading-none mb-1">—</div>
+      <div id="countdownDays" class="text-7xl font-black countdown-glow leading-none mb-1 tabular-nums">—</div>
       <div id="countdownLabel" class="text-indigo-200 text-sm font-medium">ימים לאירוע</div>
     </div>
 
@@ -62,22 +62,22 @@
     </div>
 
     <!-- Quick Stats -->
-    <div class="grid grid-cols-4 gap-2 mt-4">
-      <div class="bg-white/10 rounded-xl p-2 text-center">
-        <div class="text-lg font-bold leading-tight"><span id="statDoneTasks">0</span><span class="text-xs opacity-70">/<span id="statTotalTasks">0</span></span></div>
-        <div class="text-xs opacity-70 mt-0.5">משימות</div>
+    <div class="grid grid-cols-4 gap-1.5 mt-4">
+      <div class="bg-white/10 rounded-xl p-2.5 text-center">
+        <div class="text-base font-bold leading-tight tabular-nums"><span id="statDoneTasks">0</span><span class="text-xs opacity-70">/<span id="statTotalTasks">0</span></span></div>
+        <div class="text-xs opacity-60 mt-0.5 leading-tight">משימות</div>
       </div>
-      <div class="bg-white/10 rounded-xl p-2 text-center">
-        <div class="text-lg font-bold leading-tight" id="statGuests">0</div>
-        <div class="text-xs opacity-70 mt-0.5">אורחים</div>
+      <div class="bg-white/10 rounded-xl p-2.5 text-center">
+        <div class="text-base font-bold leading-tight tabular-nums" id="statGuests">0</div>
+        <div class="text-xs opacity-60 mt-0.5 leading-tight">אורחים</div>
       </div>
-      <div class="bg-white/10 rounded-xl p-2 text-center">
-        <div class="text-base font-bold leading-tight" id="statSpent">₪0</div>
-        <div class="text-xs opacity-70 mt-0.5">הוצאות</div>
+      <div class="bg-white/10 rounded-xl p-2.5 text-center">
+        <div class="text-sm font-bold leading-tight tabular-nums" id="statSpent">₪0</div>
+        <div class="text-xs opacity-60 mt-0.5 leading-tight">הוצאות</div>
       </div>
-      <div class="bg-white/10 rounded-xl p-2 text-center cursor-pointer hover:bg-white/20" onclick="switchTab('settings')">
-        <div class="text-lg">⚙️</div>
-        <div class="text-xs opacity-70 mt-0.5">הגדרות</div>
+      <div class="bg-white/10 rounded-xl p-2.5 text-center cursor-pointer hover:bg-white/20 transition" onclick="switchTab('settings')">
+        <div class="text-base">⚙️</div>
+        <div class="text-xs opacity-60 mt-0.5 leading-tight">הגדרות</div>
       </div>
     </div>
   </div>
@@ -443,13 +443,13 @@
 
     <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
       <div class="text-xs font-bold text-slate-600">תוצאות מחושבות</div>
-      <div class="flex items-center justify-between p-3 bg-blue-50 rounded-xl">
-        <span class="text-sm font-semibold text-blue-800">💧 מים מינרליים</span>
-        <span class="text-sm font-bold text-blue-900" id="resWater">—</span>
+      <div class="flex items-center justify-between p-3 bg-indigo-50 rounded-xl">
+        <span class="text-sm font-semibold text-indigo-800">💧 מים מינרליים</span>
+        <span class="text-sm font-bold text-indigo-900" id="resWater">—</span>
       </div>
-      <div class="flex items-center justify-between p-3 bg-purple-50 rounded-xl">
-        <span class="text-sm font-semibold text-purple-800">🥤 שתייה קלה</span>
-        <span class="text-sm font-bold text-purple-900" id="resSweetDrinks">—</span>
+      <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+        <span class="text-sm font-semibold text-slate-700">🥤 שתייה קלה</span>
+        <span class="text-sm font-bold text-slate-800" id="resSweetDrinks">—</span>
       </div>
       <button onclick="addCalculatedDrinksToShopping()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף לרשימת קניות</button>
     </div>
