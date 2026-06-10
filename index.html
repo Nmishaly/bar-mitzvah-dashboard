@@ -35,7 +35,7 @@
 <div id="onboardingModal" class="hidden fixed inset-0 z-50"></div>
 
 <!-- Main App -->
-<div id="mainApp" class="max-w-2xl mx-auto pb-24 md:mr-64 md:ml-0 md:max-w-none md:pb-8">
+<div id="mainApp" class="pb-24 md:mr-64 md:pb-8">
 
   <!-- Hero Header — mobile only; desktop equivalent lives in the sidebar -->
   <div class="md:hidden bg-gradient-to-br from-indigo-700 via-indigo-600 to-purple-700 text-white px-4 pt-6 pb-5 shadow-xl">
@@ -82,6 +82,9 @@
     </div>
   </div>
 
+  <!-- Centered content wrapper — constrains width on wide desktop screens -->
+  <div class="max-w-2xl mx-auto md:max-w-5xl">
+
   <!-- Tab Title Bar -->
   <div class="bg-white border-b border-slate-100 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm sticky top-0 z-10">
     <span id="tabTitle" class="text-base font-extrabold text-slate-800">משימות</span>
@@ -92,9 +95,9 @@
 
   <!-- ─── TASKS TAB ─── -->
   <div data-tab="tasks" class="p-4 md:p-6">
-    <div class="md:grid md:grid-cols-[320px_1fr] md:gap-6 md:items-start space-y-4 md:space-y-0">
+    <div class="lg:grid lg:grid-cols-[300px_1fr] lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
       <!-- Left panel: controls + add form -->
-      <div class="space-y-4 md:sticky md:top-16">
+      <div class="space-y-4 lg:sticky lg:top-16">
         <!-- View mode -->
         <div class="flex items-center justify-between gap-3 flex-wrap">
           <div class="flex gap-2 flex-wrap" id="responsibleFilters"></div>
@@ -126,9 +129,9 @@
 
   <!-- ─── RSVP TAB ─── -->
   <div data-tab="rsvp" class="hidden p-4 md:p-6">
-    <div class="md:grid md:grid-cols-[360px_1fr] md:gap-6 md:items-start space-y-4 md:space-y-0">
+    <div class="lg:grid lg:grid-cols-[320px_1fr] lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
       <!-- Left panel: stats + link + add form -->
-      <div class="space-y-4 md:sticky md:top-16">
+      <div class="space-y-4 lg:sticky lg:top-16">
         <!-- Stats -->
         <div class="grid grid-cols-4 gap-2">
           <div class="bg-white border border-slate-100 rounded-2xl p-3 text-center shadow-sm">
@@ -208,9 +211,9 @@
 
   <!-- ─── BUDGET TAB ─── -->
   <div data-tab="budget" class="hidden p-4 md:p-6">
-    <div class="md:grid md:grid-cols-[340px_1fr] md:gap-6 md:items-start space-y-4 md:space-y-0">
+    <div class="lg:grid lg:grid-cols-[300px_1fr] lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
       <!-- Left panel: budget controls + add form -->
-      <div class="space-y-4 md:sticky md:top-16">
+      <div class="space-y-4 lg:sticky lg:top-16">
         <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
           <div class="flex items-center justify-between">
             <div class="text-xs font-bold text-slate-600">תקציב מתוכנן (₪)</div>
@@ -265,160 +268,179 @@
   </div>
 
   <!-- ─── SHOPPING TAB ─── -->
-  <div data-tab="shopping" class="hidden p-4 space-y-4">
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2">
-      <div class="flex items-center justify-between">
-        <span class="text-xs font-bold text-slate-600">התקדמות קניות: <span id="shopProgress">0/0</span></span>
-        <div class="flex gap-1.5">
-          <button id="btnShopViewCategory" onclick="setShopViewMode('category')" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-indigo-600 text-white">קטגוריה</button>
-          <button id="btnShopViewFreshness" onclick="setShopViewMode('freshness')" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">טריות</button>
-          <button id="btnShopSelectMode" onclick="toggleShopSelectMode()" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">☑ בחר מרובה</button>
+  <div data-tab="shopping" class="hidden p-4 md:p-6">
+    <div class="lg:grid lg:grid-cols-[280px_1fr] lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
+      <!-- Left panel: controls + add form -->
+      <div class="space-y-3 lg:sticky lg:top-16">
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-600">התקדמות: <span id="shopProgress">0/0</span></span>
+            <div class="flex gap-1.5">
+              <button id="btnShopViewCategory" onclick="setShopViewMode('category')" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-indigo-600 text-white">קטגוריה</button>
+              <button id="btnShopViewFreshness" onclick="setShopViewMode('freshness')" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600">טריות</button>
+            </div>
+          </div>
+          <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div id="shopProgressBar" class="h-full bg-emerald-500 rounded-full transition-all" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Batch buy bar -->
+        <div id="batchBuyBar" class="hidden bg-indigo-600 text-white rounded-2xl p-3 flex items-center justify-between">
+          <span class="text-sm font-bold" id="batchBuyCount">0 נבחרו</span>
+          <div class="flex gap-2">
+            <button onclick="batchBuySelected()" class="bg-white text-indigo-700 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-indigo-50">✅ סמן כנרכשו</button>
+            <button onclick="toggleShopSelectMode()" class="bg-white/20 text-white text-xs px-2 py-1.5 rounded-xl">ביטול</button>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <button onclick="exportShoppingList()" class="flex-1 bg-white border border-slate-200 text-slate-700 font-bold py-2.5 rounded-2xl text-sm hover:bg-slate-50 shadow-sm transition">📋 ייצוא</button>
+          <button onclick="toggleShopSelectMode()" id="btnShopSelectMode" class="flex-1 bg-white border border-slate-200 text-slate-700 font-bold py-2.5 rounded-2xl text-sm hover:bg-slate-50 shadow-sm transition">☑ בחר</button>
+        </div>
+
+        <!-- Add item form -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="text-xs font-bold text-slate-600">פריט חדש</div>
+          <input type="text" id="newShopTitle" placeholder="שם המוצר..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" onkeydown="if(event.key==='Enter')addNewShopItem()">
+          <div class="flex gap-2 items-center">
+            <select id="newShopCategory" class="flex-1 p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option value="disposable">🍽️ כלים חד פעמיים</option>
+              <option value="drinks">🥤 שתייה</option>
+              <option value="synagogue">⛪ בית הכנסת</option>
+              <option value="dessert">🍰 קינוחים</option>
+              <option value="accommodation">🏡 אירוח</option>
+              <option value="other">📦 כללי</option>
+            </select>
+            <label class="flex items-center gap-1.5 text-xs shrink-0 cursor-pointer">
+              <input type="checkbox" id="newShopIsFresh" class="w-4 h-4 text-emerald-600">
+              <span>טרי</span>
+            </label>
+          </div>
+          <button onclick="addNewShopItem()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף לסל</button>
         </div>
       </div>
-      <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-        <div id="shopProgressBar" class="h-full bg-emerald-500 rounded-full transition-all" style="width:0%"></div>
-      </div>
+      <!-- Right panel: shopping list -->
+      <div id="shoppingList" class="space-y-4"></div>
     </div>
-
-    <!-- Batch buy bar -->
-    <div id="batchBuyBar" class="hidden bg-indigo-600 text-white rounded-2xl p-3 flex items-center justify-between">
-      <span class="text-sm font-bold" id="batchBuyCount">0 נבחרו</span>
-      <div class="flex gap-2">
-        <button onclick="batchBuySelected()" class="bg-white text-indigo-700 text-xs font-bold px-3 py-1.5 rounded-xl hover:bg-indigo-50">✅ סמן כנרכשו</button>
-        <button onclick="toggleShopSelectMode()" class="bg-white/20 text-white text-xs px-2 py-1.5 rounded-xl">ביטול</button>
-      </div>
-    </div>
-
-    <!-- Export -->
-    <button onclick="exportShoppingList()" class="w-full bg-white border border-slate-200 text-slate-700 font-bold py-2.5 rounded-2xl text-sm hover:bg-slate-50 shadow-sm transition">📋 ייצוא רשימת קניות</button>
-
-    <!-- Add item form -->
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="text-xs font-bold text-slate-600">פריט חדש</div>
-      <input type="text" id="newShopTitle" placeholder="שם המוצר..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" onkeydown="if(event.key==='Enter')addNewShopItem()">
-      <div class="flex gap-2 items-center">
-        <select id="newShopCategory" class="flex-1 p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          <option value="disposable">🍽️ כלים חד פעמיים</option>
-          <option value="drinks">🥤 שתייה</option>
-          <option value="synagogue">⛪ בית הכנסת</option>
-          <option value="dessert">🍰 קינוחים</option>
-          <option value="accommodation">🏡 אירוח</option>
-          <option value="other">📦 כללי</option>
-        </select>
-        <label class="flex items-center gap-1.5 text-xs shrink-0 cursor-pointer">
-          <input type="checkbox" id="newShopIsFresh" class="w-4 h-4 text-emerald-600">
-          <span>טרי</span>
-        </label>
-      </div>
-      <button onclick="addNewShopItem()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף לסל</button>
-    </div>
-
-    <div id="shoppingList" class="space-y-4"></div>
   </div>
 
   <!-- ─── ROOMS TAB ─── -->
-  <div data-tab="rooms" class="hidden p-4 space-y-4">
-    <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 flex items-center justify-between">
-      <span class="text-sm font-bold text-indigo-800" id="roomsStats">0/0 מאוישים</span>
-      <button onclick="copyRoomsSummary()" class="text-xs font-bold text-indigo-700 bg-white border border-indigo-200 px-3 py-1.5 rounded-xl hover:bg-indigo-50 transition">📋 העתק סיכום</button>
-    </div>
-
-    <!-- Add room form -->
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="text-xs font-bold text-slate-600">הוסף מיקום לינה</div>
-      <input type="text" id="newRoomName" placeholder="שם החדר / מיקום..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-      <div class="grid grid-cols-2 gap-2">
-        <div>
-          <label class="text-xs text-slate-500">קיבולת</label>
-          <input type="number" id="newRoomCapacity" placeholder="2" min="1" class="w-full p-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+  <div data-tab="rooms" class="hidden p-4 md:p-6">
+    <div class="lg:grid lg:grid-cols-[280px_1fr] lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
+      <!-- Left panel: stats + forms -->
+      <div class="space-y-3 lg:sticky lg:top-16">
+        <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 flex items-center justify-between">
+          <span class="text-sm font-bold text-indigo-800" id="roomsStats">0/0 מאוישים</span>
+          <button onclick="copyRoomsSummary()" class="text-xs font-bold text-indigo-700 bg-white border border-indigo-200 px-3 py-1.5 rounded-xl hover:bg-indigo-50 transition">📋 העתק</button>
         </div>
-        <div>
-          <label class="text-xs text-slate-500">סוג</label>
-          <select id="newRoomType" class="w-full p-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            <option value="villa">🏠 וילה</option>
-            <option value="hotel">🏨 מלון</option>
-            <option value="friends">🏘️ חברים / שכנים</option>
-          </select>
+
+        <!-- Add room form -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="text-xs font-bold text-slate-600">הוסף מיקום לינה</div>
+          <input type="text" id="newRoomName" placeholder="שם החדר / מיקום..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-xs text-slate-500">קיבולת</label>
+              <input type="number" id="newRoomCapacity" placeholder="2" min="1" class="w-full p-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+            <div>
+              <label class="text-xs text-slate-500">סוג</label>
+              <select id="newRoomType" class="w-full p-2 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <option value="villa">🏠 וילה</option>
+                <option value="hotel">🏨 מלון</option>
+                <option value="friends">🏘️ חברים / שכנים</option>
+              </select>
+            </div>
+          </div>
+          <button onclick="addNewRoom()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף מיקום</button>
+        </div>
+
+        <!-- External locations form -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="text-xs font-bold text-slate-600">📍 מיקום נוסף (ללא חדרים)</div>
+          <input type="text" id="newExtLocationName" placeholder="שם מיקום..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <input type="text" id="newExtLocationGuests" placeholder="אורחים (מופרד בפסיקים)..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <button onclick="addExternalLocation()" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף מיקום</button>
         </div>
       </div>
-      <button onclick="addNewRoom()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף מיקום</button>
-    </div>
-
-    <div id="roomsList" class="space-y-3"></div>
-
-    <!-- External locations section -->
-    <div class="mt-4">
-      <div class="text-sm font-bold text-slate-700 mb-3">📍 מיקומים נוספים (ללא ניהול חדרים)</div>
-      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-        <input type="text" id="newExtLocationName" placeholder="שם מיקום..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-        <input type="text" id="newExtLocationGuests" placeholder="אורחים (מופרד בפסיקים)..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-        <button onclick="addExternalLocation()" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף מיקום</button>
+      <!-- Right panel: lists -->
+      <div class="space-y-4">
+        <div id="roomsList" class="space-y-3"></div>
+        <div id="extLocationsList" class="space-y-3"></div>
       </div>
-      <div id="extLocationsList" class="space-y-3 mt-3"></div>
     </div>
   </div>
 
   <!-- ─── CALLS TAB ─── -->
-  <div data-tab="calls" class="hidden p-4 space-y-4">
-    <div class="text-xs text-slate-500 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm">
-      📞 <span id="callsProgress">0/0 הושלמו</span>
+  <div data-tab="calls" class="hidden p-4 md:p-6">
+    <div class="lg:grid lg:grid-cols-[280px_1fr] lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
+      <!-- Left panel: progress + add form -->
+      <div class="space-y-3 lg:sticky lg:top-16">
+        <div class="text-xs text-slate-500 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm">
+          📞 <span id="callsProgress">0/0 הושלמו</span>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="text-xs font-bold text-slate-600">בירור חדש</div>
+          <input type="text" id="newCallTitle" placeholder="נושא הבירור..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <input type="text" id="newCallSubtitle" placeholder="פרטים נוספים..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <input type="tel" id="newCallPhone" placeholder="מספר טלפון (אופציונלי)" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" dir="ltr">
+          <button onclick="addNewCall()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף בירור</button>
+        </div>
+      </div>
+      <!-- Right panel: calls list -->
+      <div id="callsList" class="space-y-3"></div>
     </div>
-
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="text-xs font-bold text-slate-600">בירור חדש</div>
-      <input type="text" id="newCallTitle" placeholder="נושא הבירור..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-      <input type="text" id="newCallSubtitle" placeholder="פרטים נוספים..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-      <input type="tel" id="newCallPhone" placeholder="מספר טלפון (אופציונלי)" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" dir="ltr">
-      <button onclick="addNewCall()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף בירור</button>
-    </div>
-
-    <div id="callsList" class="space-y-3"></div>
   </div>
 
   <!-- ─── LOGISTICS TAB ─── -->
-  <div data-tab="logistics" class="hidden p-4 space-y-4">
-    <div class="flex gap-2" id="logFilterButtons">
-      <button id="logFilter_all" onclick="filterLogistics('all')" class="px-3 py-1 rounded-xl text-xs font-bold border bg-indigo-600 border-indigo-600 text-white">הכל</button>
-      <button id="logFilter_unpacked" onclick="filterLogistics('unpacked')" class="px-3 py-1 rounded-xl text-xs font-bold border bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200">לא ארוזים</button>
-      <button id="logFilter_packed" onclick="filterLogistics('packed')" class="px-3 py-1 rounded-xl text-xs font-bold border bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200">ארוזים</button>
+  <div data-tab="logistics" class="hidden p-4 md:p-6">
+    <div class="lg:grid lg:grid-cols-[260px_1fr] lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
+      <div class="space-y-3 lg:sticky lg:top-16">
+        <div class="flex gap-2 flex-wrap" id="logFilterButtons">
+          <button id="logFilter_all" onclick="filterLogistics('all')" class="px-3 py-1 rounded-xl text-xs font-bold border bg-indigo-600 border-indigo-600 text-white">הכל</button>
+          <button id="logFilter_unpacked" onclick="filterLogistics('unpacked')" class="px-3 py-1 rounded-xl text-xs font-bold border bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200">לא ארוזים</button>
+          <button id="logFilter_packed" onclick="filterLogistics('packed')" class="px-3 py-1 rounded-xl text-xs font-bold border bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200">ארוזים</button>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="text-xs font-bold text-slate-600">ערכה חדשה</div>
+          <input type="text" id="newLogName" placeholder="שם הערכה / תיק..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <input type="text" id="newLogDest" placeholder="יעד (לדוגמה: בית הכנסת)..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <button onclick="addNewLogisticsKit()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף ערכה</button>
+        </div>
+      </div>
+      <div id="logisticsList" class="space-y-3"></div>
     </div>
-
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="text-xs font-bold text-slate-600">ערכה חדשה</div>
-      <input type="text" id="newLogName" placeholder="שם הערכה / תיק..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-      <input type="text" id="newLogDest" placeholder="יעד (לדוגמה: בית הכנסת)..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-      <button onclick="addNewLogisticsKit()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף ערכה</button>
-    </div>
-
-    <div id="logisticsList" class="space-y-3"></div>
   </div>
 
   <!-- ─── MENU TAB ─── -->
-  <div data-tab="menu" class="hidden p-4 space-y-4">
-    <div id="menuFilterBar" class="flex flex-wrap gap-2"></div>
-
-    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="text-xs font-bold text-slate-600">מנה חדשה</div>
-      <input type="text" id="newMenuName" placeholder="שם המנה..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-      <div class="grid grid-cols-2 gap-2">
-        <select id="newMenuMeal" class="p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
-        <select id="newMenuCat" class="p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          <option>מנה ראשונה</option><option>מנה עיקרית</option><option>תוספות</option>
-          <option>קינוח</option><option>שתייה</option><option>כיבוד</option>
-        </select>
+  <div data-tab="menu" class="hidden p-4 md:p-6">
+    <div class="lg:grid lg:grid-cols-[260px_1fr] lg:gap-6 lg:items-start space-y-4 lg:space-y-0">
+      <div class="space-y-3 lg:sticky lg:top-16">
+        <div id="menuFilterBar" class="flex flex-wrap gap-2"></div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+          <div class="text-xs font-bold text-slate-600">מנה חדשה</div>
+          <input type="text" id="newMenuName" placeholder="שם המנה..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <div class="grid grid-cols-2 gap-2">
+            <select id="newMenuMeal" class="p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+            <select id="newMenuCat" class="p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+              <option>מנה ראשונה</option><option>מנה עיקרית</option><option>תוספות</option>
+              <option>קינוח</option><option>שתייה</option><option>כיבוד</option>
+            </select>
+          </div>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2 cursor-pointer text-sm"><input type="checkbox" id="tagVegan" class="w-4 h-4 text-emerald-600"> 🌿 טבעוני</label>
+            <label class="flex items-center gap-2 cursor-pointer text-sm"><input type="checkbox" id="tagGluten" class="w-4 h-4 text-amber-600"> 🌾 ללא גלוטן</label>
+          </div>
+          <button onclick="addNewMenuItem()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף מנה</button>
+        </div>
       </div>
-      <div class="flex gap-4">
-        <label class="flex items-center gap-2 cursor-pointer text-sm"><input type="checkbox" id="tagVegan" class="w-4 h-4 text-emerald-600"> 🌿 טבעוני</label>
-        <label class="flex items-center gap-2 cursor-pointer text-sm"><input type="checkbox" id="tagGluten" class="w-4 h-4 text-amber-600"> 🌾 ללא גלוטן</label>
-      </div>
-      <button onclick="addNewMenuItem()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition">הוסף מנה</button>
+      <div id="menuList" class="space-y-4"></div>
     </div>
-
-    <div id="menuList" class="space-y-4"></div>
   </div>
 
   <!-- ─── SCHEDULE TAB ─── -->
-  <div data-tab="schedule" class="hidden p-4 space-y-4">
+  <div data-tab="schedule" class="hidden p-4 md:p-6 space-y-4">
     <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
       <div class="text-xs font-bold text-slate-600">פעילות חדשה</div>
       <input type="text" id="schTitle" placeholder="שם הפעילות..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
@@ -434,7 +456,7 @@
   </div>
 
   <!-- ─── DRINKS TAB ─── -->
-  <div data-tab="drinks" class="hidden p-4 space-y-4">
+  <div data-tab="drinks" class="hidden p-4 md:p-6 space-y-4">
     <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 text-xs text-indigo-800">
       💡 הזינו מספר אורחים לכל ארוחה — המחשבון יחשב את הכמות המומלצת לשתייה
     </div>
@@ -456,7 +478,7 @@
   </div>
 
   <!-- ─── SETTINGS TAB ─── -->
-  <div data-tab="settings" class="hidden p-4 space-y-5">
+  <div data-tab="settings" class="hidden p-4 md:p-6 space-y-5">
     <!-- Event info -->
     <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
       <div class="text-sm font-extrabold text-slate-800">🎉 פרטי האירוע</div>
@@ -527,6 +549,8 @@
       <button onclick="openDeleteEventModal()" class="w-full bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-2.5 rounded-xl transition">🗑 מחק / עזוב אירוע</button>
     </div>
   </div>
+
+  </div><!-- end content wrapper -->
 
 </div><!-- end mainApp -->
 

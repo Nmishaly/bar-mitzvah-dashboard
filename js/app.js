@@ -444,7 +444,7 @@ function setShopViewMode(mode) {
 function toggleShopSelectMode() {
     shopSelectMode = !shopSelectMode; selectedShopItems.clear();
     const btn = document.getElementById('btnShopSelectMode');
-    if (btn) btn.textContent = shopSelectMode ? '✕ ביטול' : '☑ בחר מרובה';
+    if (btn) btn.textContent = shopSelectMode ? '✕ ביטול' : '☑ בחר';
     document.getElementById('batchBuyBar')?.classList.toggle('hidden', !shopSelectMode);
     renderShopping();
 }
