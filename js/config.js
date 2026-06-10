@@ -13,9 +13,9 @@ const FIREBASE_CONFIG = {
 
 // ─── Feedback Settings ────────────────────────────────────────────────────────
 // Update these with your actual contact details
-const FEEDBACK_WHATSAPP = ""; // e.g. "972521234567"
+const FEEDBACK_WHATSAPP = "972524773764"; // e.g. "972521234567"
 const FEEDBACK_EMAIL = "netzer7@gmail.com";
-const FEEDBACK_FORM_URL = ""; // Google Form URL (optional)
+//const FEEDBACK_FORM_URL = ""; // Google Form URL (optional)
 
 // ─── Runtime state ────────────────────────────────────────────────────────────
 let firebaseApp = null;
