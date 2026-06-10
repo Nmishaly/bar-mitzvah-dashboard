@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>אישור הגעה לשבת בר מצווה</title>
+<meta name="theme-color" content="#4f46e5">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: linear-gradient(135deg, #312e81 0%, #4f46e5 50%, #7c3aed 100%); min-height: 100vh; }
+  .card { animation: slideUp 0.4s ease-out; }
+  @keyframes slideUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+  .confetti { display: none; }
+</style>
+</head>
+<body class="min-h-screen flex items-start justify-center p-4 py-8">
+
+<div id="app" class="w-full max-w-md">
+
+  <!-- Loading -->
+  <div id="loadingState" class="text-center text-white py-20">
+    <div class="text-5xl mb-4">✡️</div>
+    <div class="text-xl font-bold">טוען...</div>
+  </div>
+
+  <!-- RSVP Form -->
+  <div id="formState" class="hidden card">
+    <!-- Header -->
+    <div class="text-center text-white mb-6">
+      <div class="text-6xl mb-4">✡️</div>
+      <h1 class="text-3xl font-black">הזמנה לשבת בר מצווה</h1>
+      <div class="mt-3 bg-white/10 rounded-2xl px-5 py-3 inline-block">
+        <div class="text-2xl font-black" id="cfmBoyName">—</div>
+        <div class="text-indigo-200 text-sm mt-0.5" id="cfmEventDate">—</div>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+      <!-- Card header -->
+      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-indigo-100 px-6 py-5 text-center">
+        <div class="text-lg font-extrabold text-slate-800">אנחנו שמחים להזמין אתכם! 🎉</div>
+        <div class="text-sm text-slate-500 mt-1">אנא מלאו את פרטי ההגעה שלכם</div>
+      </div>
+
+      <div class="p-6 space-y-5">
+        <!-- Name -->
+        <div class="space-y-1.5">
+          <label class="block text-sm font-bold text-slate-700">שם משפחה / שם מלא <span class="text-red-400">*</span></label>
+          <input type="text" id="cfmName" placeholder="לדוגמה: משפחת ישראלי" class="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold" autocomplete="name">
+        </div>
+
+        <!-- Can't attend -->
+        <label class="flex items-center gap-3 p-3.5 border-2 border-slate-100 rounded-2xl cursor-pointer hover:border-red-200 hover:bg-red-50 transition" id="cantAttendLabel">
+          <input type="checkbox" id="cfmCantAttend" onchange="toggleCantAttend()" class="w-5 h-5 text-red-400">
+          <div>
+            <div class="font-bold text-slate-800 text-sm">לצערי, לא נוכל להגיע 😔</div>
+            <div class="text-xs text-slate-500">נסמן כאן ונשלח ברכות</div>
+          </div>
+        </label>
+
+        <!-- Attendance details (hidden when can't attend) -->
+        <div id="attendanceSection" class="space-y-5">
+          <!-- Guest count -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1.5">
+              <label class="block text-sm font-bold text-slate-700">מבוגרים</label>
+              <div class="flex items-center gap-2 border border-slate-200 rounded-2xl overflow-hidden">
+                <button onclick="adjustCount('cfmAdults', -1)" class="px-3.5 py-3 text-slate-500 hover:bg-slate-100 font-bold text-lg">−</button>
+                <input type="number" id="cfmAdults" value="2" min="0" class="flex-1 text-center text-lg font-bold text-slate-800 border-0 focus:outline-none p-0">
+                <button onclick="adjustCount('cfmAdults', 1)" class="px-3.5 py-3 text-slate-500 hover:bg-slate-100 font-bold text-lg">+</button>
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <label class="block text-sm font-bold text-slate-700">ילדים</label>
+              <div class="flex items-center gap-2 border border-slate-200 rounded-2xl overflow-hidden">
+                <button onclick="adjustCount('cfmKids', -1)" class="px-3.5 py-3 text-slate-500 hover:bg-slate-100 font-bold text-lg">−</button>
+                <input type="number" id="cfmKids" value="0" min="0" class="flex-1 text-center text-lg font-bold text-slate-800 border-0 focus:outline-none p-0">
+                <button onclick="adjustCount('cfmKids', 1)" class="px-3.5 py-3 text-slate-500 hover:bg-slate-100 font-bold text-lg">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Meals (dynamic) -->
+          <div id="cfmMealsSection" class="space-y-2">
+            <label class="block text-sm font-bold text-slate-700">לאילו ארוחות תגיעו?</label>
+            <div id="cfmMealsList" class="space-y-2"></div>
+          </div>
+
+          <!-- Sleep (only shown if event has accommodation) -->
+          <div id="cfmSleepSection" class="hidden space-y-2">
+            <label class="block text-sm font-bold text-slate-700">האם תישארו לישון?</label>
+            <div class="flex gap-2">
+              <button id="cfmSleepNo" onclick="setSleepAnswer('no')" class="flex-1 py-3 rounded-2xl text-sm font-bold border-2 border-indigo-600 bg-indigo-600 text-white transition">לא</button>
+              <button id="cfmSleepYes" onclick="setSleepAnswer('yes')" class="flex-1 py-3 rounded-2xl text-sm font-bold border-2 border-slate-200 text-slate-600 hover:bg-slate-50 transition">כן</button>
+            </div>
+          </div>
+
+          <!-- Baby cot (shown when sleeping) -->
+          <div id="cfmBabyCotSection" class="hidden">
+            <label class="flex items-center gap-3 p-3.5 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50">
+              <input type="checkbox" id="cfmBabyCot" class="w-5 h-5 text-indigo-600">
+              <div>
+                <div class="font-bold text-slate-800 text-sm">🍼 צריכים עריסה לתינוק</div>
+              </div>
+            </label>
+          </div>
+
+          <!-- Dietary preferences -->
+          <div class="space-y-2">
+            <label class="block text-sm font-bold text-slate-700">העדפות תזונה (אופציונלי)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <label class="flex items-center gap-2.5 p-3 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 hover:border-indigo-200 transition">
+                <input type="checkbox" name="cfmDietary" value="vegetarian" class="w-4 h-4 text-indigo-600">
+                <span class="text-sm font-semibold">🥦 צמחוני</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-3 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 hover:border-indigo-200 transition">
+                <input type="checkbox" name="cfmDietary" value="vegan" class="w-4 h-4 text-indigo-600">
+                <span class="text-sm font-semibold">🌿 טבעוני</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-3 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 hover:border-indigo-200 transition">
+                <input type="checkbox" name="cfmDietary" value="gluten-free" class="w-4 h-4 text-indigo-600">
+                <span class="text-sm font-semibold">🌾 ללא גלוטן</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-3 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50 hover:border-indigo-200 transition">
+                <input type="checkbox" name="cfmDietary" value="mehadrin" class="w-4 h-4 text-indigo-600">
+                <span class="text-sm font-semibold">✡️ מהדרין</span>
+              </label>
+            </div>
+            <textarea id="cfmDietaryNote" rows="2" placeholder="הערה מיוחדת לגבי אוכל / אלרגיה..." class="w-full p-3 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none"></textarea>
+          </div>
+        </div>
+
+        <!-- Submit button -->
+        <button onclick="submitRsvp()" id="submitBtn" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg">
+          אשר הגעה ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thank You Screen -->
+  <div id="thankYouState" class="hidden card text-center text-white py-8">
+    <div class="text-8xl mb-4" id="tyIcon">🎉</div>
+    <h2 class="text-3xl font-black mb-3" id="tyTitle">תודה רבה!</h2>
+    <p class="text-indigo-200 text-base mb-6 leading-relaxed" id="tyMessage">קיבלנו את אישורך. נתראה בשמחה!</p>
+    <div class="bg-white/10 rounded-2xl p-4 text-sm space-y-1" id="tySummary"></div>
+    <p class="text-indigo-300 text-sm mt-6">מזל טוב! 🌟</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="errorState" class="hidden card text-center text-white py-20">
+    <div class="text-5xl mb-4">⚠️</div>
+    <h2 class="text-xl font-bold mb-2">הלינק אינו תקין</h2>
+    <p class="text-indigo-200 text-sm">בקש/י מהמארגנים לשלוח לינק חדש</p>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/parasha.js"></script>
+<script>
+// ─── Confirm Page Logic ────────────────────────────────────────────────────
+
+let _eventId = null;
+let _setup = null;
+let _sleepAnswer = 'no';
+
+const MEAL_LABELS = { friday:'ערב שבת 🍷', saturday:'בוקר שבת ⛪', third:'סעודה שלישית 🥧' };
+
+function getParams() {
+    const p = new URLSearchParams(window.location.search);
+    return { eventId: p.get('event') };
+}
+
+function adjustCount(id, delta) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const val = Math.max(0, parseInt(el.value||0) + delta);
+    el.value = val;
+}
+
+function setSleepAnswer(val) {
+    _sleepAnswer = val;
+    const yesBtn = document.getElementById('cfmSleepYes');
+    const noBtn = document.getElementById('cfmSleepNo');
+    const babyCotSection = document.getElementById('cfmBabyCotSection');
+    if (yesBtn) yesBtn.className = `flex-1 py-3 rounded-2xl text-sm font-bold border-2 ${val==='yes'?'border-indigo-600 bg-indigo-600 text-white':'border-slate-200 text-slate-600 hover:bg-slate-50'} transition`;
+    if (noBtn) noBtn.className = `flex-1 py-3 rounded-2xl text-sm font-bold border-2 ${val==='no'?'border-indigo-600 bg-indigo-600 text-white':'border-slate-200 text-slate-600 hover:bg-slate-50'} transition`;
+    if (babyCotSection) babyCotSection.classList.toggle('hidden', val !== 'yes');
+}
+
+function toggleCantAttend() {
+    const cantAttend = document.getElementById('cfmCantAttend').checked;
+    document.getElementById('attendanceSection').classList.toggle('hidden', cantAttend);
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) submitBtn.textContent = cantAttend ? 'שלח ברכות 💌' : 'אשר הגעה ✓';
+}
+
+async function loadSetupFromCloud(eventId) {
+    if (!FIREBASE_CONFIG.apiKey || !FIREBASE_CONFIG.projectId) {
+        return null;
+    }
+    try {
+        const [{ initializeApp }, { getAuth, signInAnonymously }, { getFirestore, doc, getDoc }] = await Promise.all([
+            import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'),
+            import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'),
+            import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js')
+        ]);
+        const app = initializeApp(FIREBASE_CONFIG, 'confirm-' + eventId);
+        const auth = getAuth(app);
+        await signInAnonymously(auth);
+        const db = getFirestore(app);
+        const ref = doc(db, `events/${eventId}/_settings`, 'setup');
+        const snap = await getDoc(ref);
+        return snap.exists() ? snap.data() : null;
+    } catch (e) {
+        console.error('loadSetupFromCloud error:', e);
+        return null;
+    }
+}
+
+async function submitToCloud(rsvpData) {
+    if (!FIREBASE_CONFIG.apiKey || !FIREBASE_CONFIG.projectId || !_eventId) return;
+    try {
+        const [{ initializeApp }, { getAuth, signInAnonymously }, { getFirestore, doc, setDoc }] = await Promise.all([
+            import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'),
+            import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'),
+            import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js')
+        ]);
+        const app = initializeApp(FIREBASE_CONFIG, 'confirm-rsvp-' + _eventId + '-' + Date.now());
+        const auth = getAuth(app);
+        await signInAnonymously(auth);
+        const db = getFirestore(app);
+        await setDoc(doc(db, `events/${_eventId}/rsvps`, rsvpData.id), rsvpData);
+    } catch (e) {
+        console.error('submitToCloud error:', e);
+    }
+}
+
+function renderMeals(setup) {
+    const meals = setup?.meals || ['friday','saturday','third'];
+    const container = document.getElementById('cfmMealsList');
+    if (!container) return;
+    container.innerHTML = meals.map(m => `
+    <label class="flex items-center gap-3 p-3.5 border border-slate-100 rounded-2xl cursor-pointer hover:bg-indigo-50 hover:border-indigo-200 transition">
+        <input type="checkbox" id="cfmMeal_${m}" checked class="w-5 h-5 text-indigo-600">
+        <span class="font-semibold text-slate-800">${MEAL_LABELS[m]||m}</span>
+    </label>`).join('');
+}
+
+function showForm(setup) {
+    document.getElementById('loadingState').classList.add('hidden');
+    document.getElementById('formState').classList.remove('hidden');
+
+    // Fill boy name and date
+    const boyName = setup?.boyName || 'הבר מצווה';
+    document.getElementById('cfmBoyName').textContent = 'בר מצווה של ' + boyName;
+
+    const dateStr = setup?.useParasha
+        ? `פרשת ${setup.parashaName}`
+        : (setup?.eventDate ? formatHebrewDate(setup.eventDate) : '');
+    document.getElementById('cfmEventDate').textContent = dateStr;
+
+    renderMeals(setup);
+
+    // Show sleep section only if accommodation
+    if (setup?.hasAccommodation) {
+        document.getElementById('cfmSleepSection').classList.remove('hidden');
+    }
+}
+
+function formatHebrewDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr + 'T12:00:00');
+    return d.toLocaleDateString('he-IL', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+async function submitRsvp() {
+    const name = document.getElementById('cfmName').value.trim();
+    if (!name) { alert('אנא הזן/י את שמך'); return; }
+
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'שולח...'; }
+
+    const cantAttend = document.getElementById('cfmCantAttend').checked;
+    const adults = cantAttend ? 0 : parseInt(document.getElementById('cfmAdults').value) || 0;
+    const kids = cantAttend ? 0 : parseInt(document.getElementById('cfmKids').value) || 0;
+    const sleep = cantAttend ? 'no' : _sleepAnswer;
+    const babyCot = cantAttend ? false : (document.getElementById('cfmBabyCot')?.checked || false);
+    const dietaryNote = cantAttend ? '' : (document.getElementById('cfmDietaryNote')?.value?.trim() || '');
+
+    const dietary = cantAttend ? [] : Array.from(document.querySelectorAll('input[name="cfmDietary"]:checked')).map(cb => cb.value);
+    const meals = cantAttend ? [] : (() => {
+        const setup = _setup || {};
+        const activeMeals = setup.meals || ['friday','saturday','third'];
+        return activeMeals.filter(m => document.getElementById('cfmMeal_' + m)?.checked);
+    })();
+
+    const rsvp = {
+        id: 'g_confirm_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
+        name, adults, kids, sleep, babyCot, cantAttend, dietary, dietaryNote, meals,
+        createdAt: Date.now(), source: 'confirm_page'
+    };
+
+    await submitToCloud(rsvp);
+    showThankYou(rsvp);
+}
+
+function showThankYou(rsvp) {
+    document.getElementById('formState').classList.add('hidden');
+    const tyState = document.getElementById('thankYouState');
+    tyState.classList.remove('hidden');
+
+    if (rsvp.cantAttend) {
+        document.getElementById('tyIcon').textContent = '💌';
+        document.getElementById('tyTitle').textContent = 'ברכות שלנו!';
+        document.getElementById('tyMessage').textContent = 'מצטערים שלא תוכלו להגיע. נשמח לקבל ברכות בכל זמן!';
+        document.getElementById('tySummary').innerHTML = `<div>קיבלנו את הודעתך, ${rsvp.name} 🙏</div>`;
+    } else {
+        document.getElementById('tyTitle').textContent = 'מחכים לכם! 🎉';
+        document.getElementById('tyMessage').textContent = 'אישורך התקבל. נתראה בשמחה!';
+        const dietaryNames = { vegetarian:'צמחוני', vegan:'טבעוני', 'gluten-free':'ללא גלוטן', mehadrin:'מהדרין' };
+        const summary = [
+            `👤 ${rsvp.name}`,
+            `👨‍👩‍👧‍👦 ${rsvp.adults} מבוגרים${rsvp.kids ? ` + ${rsvp.kids} ילדים` : ''}`,
+            rsvp.sleep === 'yes' ? '🛏 נשאר ללינה' : '',
+            rsvp.babyCot ? '🍼 צריך עריסה' : '',
+            rsvp.dietary?.length ? `🍽 ${rsvp.dietary.map(d=>dietaryNames[d]||d).join(', ')}` : ''
+        ].filter(Boolean);
+        document.getElementById('tySummary').innerHTML = summary.map(s => `<div>${s}</div>`).join('');
+    }
+}
+
+// ─── Init ──────────────────────────────────────────────────────────────────
+
+window.onload = async function() {
+    const { eventId } = getParams();
+    if (!eventId) {
+        document.getElementById('loadingState').classList.add('hidden');
+        document.getElementById('errorState').classList.remove('hidden');
+        return;
+    }
+    _eventId = eventId;
+
+    // Try to load setup from cloud
+    _setup = await loadSetupFromCloud(eventId);
+
+    if (_setup) {
+        showForm(_setup);
+    } else {
+        // No Firebase or setup not found — show generic form
+        showForm(null);
+    }
+};
+</script>
+</body>
+</html>
