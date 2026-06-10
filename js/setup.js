@@ -42,8 +42,8 @@ function renderSetupOverlay() {
     const overlay = document.getElementById('setupOverlay');
     if (!overlay) return;
     overlay.innerHTML = `
-    <div class="min-h-screen bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 flex items-center justify-center p-4 py-8">
-      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg md:max-w-4xl overflow-hidden flex flex-col md:flex-row">
+    <div class="min-h-screen bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 flex flex-col items-center justify-start md:justify-center p-4 py-8">
+      <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg md:max-w-4xl overflow-hidden flex flex-col md:flex-row my-4 md:my-0">
 
         <!-- Left decorative panel (desktop only) -->
         <div class="hidden md:flex flex-col justify-between bg-gradient-to-b from-indigo-600 to-purple-700 text-white p-10 w-80 shrink-0">
@@ -70,7 +70,7 @@ function renderSetupOverlay() {
           </div>
 
           <!-- Steps -->
-          <div id="setupStep1" class="p-6 md:p-10 space-y-4 flex-1 flex flex-col justify-center">
+          <div id="setupStep1" class="p-6 md:p-10 space-y-4 md:flex-1 md:flex md:flex-col md:justify-center">
             <h2 class="text-xl md:text-2xl font-extrabold text-slate-800 text-center mb-2">כיצד תרצו להתחיל?</h2>
             <button onclick="showSetupCreate()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-5 px-6 rounded-2xl text-base transition shadow-lg flex items-center gap-4">
               <span class="text-3xl">✨</span>
@@ -199,7 +199,7 @@ function renderSetupOverlay() {
           </div>
 
           <!-- Save Access Step -->
-          <div id="setupStepSave" class="hidden p-6 md:p-10 flex-1 flex flex-col justify-center">
+          <div id="setupStepSave" class="hidden p-6 md:p-10 md:flex-1 md:flex md:flex-col md:justify-center">
             <div class="text-center mb-6">
               <div class="text-5xl mb-3">🔑</div>
               <h2 class="text-xl md:text-2xl font-extrabold text-slate-800 mb-2">האירוע נוצר בהצלחה!</h2>
