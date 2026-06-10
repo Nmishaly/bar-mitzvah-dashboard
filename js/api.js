@@ -224,4 +224,13 @@ function updateCloudStatus(connected) {
     const label = document.getElementById('cloudLabel');
     if (dot) dot.className = `w-2.5 h-2.5 rounded-full ${connected ? 'bg-emerald-400' : 'bg-slate-300'}`;
     if (label) label.textContent = connected ? 'מחובר לענן' : 'מקומי בלבד';
+
+    const sDot = document.getElementById('settingsCloudDot');
+    const sStatus = document.getElementById('settingsCloudStatus');
+    const sDesc = document.getElementById('settingsCloudDesc');
+    if (sDot) sDot.className = `w-3 h-3 rounded-full ${connected ? 'bg-emerald-400' : 'bg-slate-300'}`;
+    if (sStatus) sStatus.textContent = connected ? 'מחובר לענן' : 'מקומי בלבד';
+    if (sDesc) sDesc.textContent = connected
+        ? 'הנתונים מסונכרנים בזמן אמת עם כל בני המשפחה'
+        : 'הנתונים נשמרים במכשיר זה בלבד — גבו את הנתונים מטה';
 }

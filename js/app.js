@@ -75,17 +75,37 @@ TODAY_BASELINE.setHours(0, 0, 0, 0);
 
 // ─── Initialize with setup defaults ──────────────────────────────────────────
 
+// Days-before-event defaults for each default task
+const TASK_DEADLINE_OFFSETS = {
+    t1: 180, t2: 180, t3: 180, // צלם, מוזיקאי, מקום — 6 חודשים
+    t4: 42,                     // הזמנות — 6 שבועות
+    t5: 90,                     // ביגוד — 3 חודשים
+    t6: 30, t9: 30,             // נאום, תוכן — חודש
+    t7: 60, t8: 60,             // חזרות, גבאי — חודשיים
+    t10: 14, t13: 14, t15: 14,  // אישורי הגעה, חדרים, תוכנייה — שבועיים
+    t11: 7, t12: 3,             // שתייה — שבוע, קניות — 3 ימים
+    t14: 30,                    // מזכרות — חודש
+};
+
+function getDefaultTaskDeadline(taskId, eventDate) {
+    if (!eventDate) return '';
+    const offset = TASK_DEADLINE_OFFSETS[taskId];
+    if (!offset) return eventDate;
+    const d = new Date(eventDate + 'T00:00:00');
+    d.setDate(d.getDate() - offset);
+    return d.toISOString().split('T')[0];
+}
+
 function initDefaultsFromSetup() {
     const cfg = getEventConfig();
     const resp1 = cfg ? cfg.responsible1 : 'אבא';
-    const resp2 = cfg ? cfg.responsible2 : 'אמא';
     const eventDate = cfg ? cfg.eventDate : '';
 
     if (!tasks) {
         tasks = DEFAULT_TASKS.map(t => ({
             ...t,
             responsible: t.responsible || resp1,
-            deadline: t.deadline || eventDate
+            deadline: t.deadline || getDefaultTaskDeadline(t.id, eventDate)
         }));
     }
     if (!shopping) shopping = [...DEFAULT_SHOPPING];
@@ -115,7 +135,10 @@ function saveLocalState() {
         for (const [key, value] of Object.entries(states)) {
             localStorage.setItem(key, JSON.stringify(value));
         }
-    } catch(e) { console.error("LocalStorage save error:", e); }
+    } catch(e) {
+        console.error("LocalStorage save error:", e);
+        showToast("⚠️ האחסון במכשיר מלא — חלק מהנתונים לא נשמרו. נא לפנות מקום או לגבות.", 6000);
+    }
 }
 
 // ─── Task utilities ────────────────────────────────────────────────────────────
@@ -201,6 +224,9 @@ async function addNewRsvp() {
     if (!nameEl) return;
     const name = nameEl.value.trim();
     if (!name) { showToast("אנא הזינו שם אורח או משפחה!"); return; }
+
+    const duplicate = rsvps.find(g => g.name.trim().toLowerCase() === name.toLowerCase());
+    if (duplicate && !confirm(`"${name}" כבר רשום/ה. להוסיף בכל זאת?`)) return;
 
     const adults = parseInt(document.getElementById('rsvpAdults')?.value) || 0;
     const kids = parseInt(document.getElementById('rsvpKids')?.value) || 0;
@@ -438,9 +464,12 @@ async function batchBuySelected() {
     selectedShopItems.clear(); shopSelectMode = false;
     saveLocalState(); renderShopping();
     if (isCloudConnected && db) {
-        const batch = db.batch();
-        ids.forEach(id => batch.set(getCollectionRef('shopping').doc(id), { bought: true, boughtAt: now }, { merge: true }));
-        await batch.commit().catch(e => console.error(e));
+        try {
+            const { writeBatch, doc } = await import(FIREBASE_MODULES.firestore);
+            const batch = writeBatch(db);
+            ids.forEach(id => batch.set(doc(db, getCollectionPath('shopping'), id), { bought: true, boughtAt: now }, { merge: true }));
+            await batch.commit();
+        } catch(e) { console.error('batchBuy error:', e); }
     }
     showToast(`${ids.length} פריטים סומנו כנרכשו! ✅`);
 }
@@ -882,6 +911,78 @@ function copyConfirmLink() {
     const base = window.location.origin + window.location.pathname.replace('index.html','');
     const link = `${base}confirm.html?event=${setup.eventId}`;
     navigator.clipboard?.writeText(link).then(() => showToast('לינק אישור הגעה הועתק! 📋'));
+}
+
+function shareConfirmWhatsApp() {
+    const setup = getSetup();
+    const cfg = getEventConfig();
+    if (!setup?.eventId || !cfg) { showToast('צור אירוע תחילה!'); return; }
+    const base = window.location.origin + window.location.pathname.replace('index.html','');
+    const link = `${base}confirm.html?event=${setup.eventId}`;
+    const dateStr = cfg.useParasha ? `פרשת ${cfg.parashaName}` : formatHebrewDate(cfg.eventDate);
+    const text = `🎉 הוזמנתם לבר מצווה של ${cfg.boyName}!\n📅 ${dateStr}\n\nאנא אשרו הגעה דרך הלינק:\n${link}`;
+    sendWaText(text);
+}
+
+// ─── Data Export / Import ─────────────────────────────────────────────────────
+
+function exportEventData() {
+    const setup = getSetup();
+    if (!setup) { showToast('אין נתונים לגיבוי.'); return; }
+    const payload = {
+        _version: 1,
+        _exportedAt: new Date().toISOString(),
+        setup,
+        tasks, shopping, calls, rooms, externalLocations,
+        rsvps, budget, logistics, menu, schedule
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const boyName = setup.boyName || 'barmitzvah';
+    a.href = url;
+    a.download = `barmitzvah-${boyName}-backup.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('הגיבוי הורד בהצלחה! ✅');
+}
+
+function importEventData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+            if (!data._version || !data.setup) {
+                showToast('קובץ הגיבוי אינו תקין.'); return;
+            }
+            if (!confirm('שחזור יחליף את כל הנתונים הנוכחיים. להמשיך?')) return;
+
+            if (data.setup) saveSetup(data.setup);
+            tasks = data.tasks || tasks;
+            shopping = data.shopping || shopping;
+            calls = data.calls || calls;
+            rooms = data.rooms || rooms;
+            externalLocations = data.externalLocations || externalLocations;
+            rsvps = data.rsvps || rsvps;
+            budget = data.budget || budget;
+            logistics = data.logistics || logistics;
+            menu = data.menu || menu;
+            schedule = data.schedule || schedule;
+
+            saveLocalState();
+            renderAll();
+            updateHeaderFromSetup();
+            showToast('הנתונים שוחזרו בהצלחה! 🎉');
+        } catch(err) {
+            showToast('שגיאה בקריאת הקובץ. ודאו שהוא קובץ גיבוי תקין.');
+        }
+    };
+    input.click();
 }
 
 // ─── Render helpers ───────────────────────────────────────────────────────────
