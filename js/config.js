@@ -7,10 +7,14 @@ const FIREBASE_CONFIG = (typeof FIREBASE_CREDENTIALS !== 'undefined' && FIREBASE
   : {};
 
 // ─── Feedback Settings ────────────────────────────────────────────────────────
-// Update these with your actual contact details
-const FEEDBACK_WHATSAPP = "972524773764"; // e.g. "972521234567"
-const FEEDBACK_EMAIL = "netzer7@gmail.com";
-//const FEEDBACK_FORM_URL = ""; // Google Form URL (optional)
+// Set these in js/firebase-credentials.js alongside your Firebase config.
+// Defaults to empty (feedback buttons will show "לא הוגדר" if missing).
+const FEEDBACK_WHATSAPP = (typeof FIREBASE_CREDENTIALS !== 'undefined' && FIREBASE_CREDENTIALS?.feedbackWhatsapp)
+    ? FIREBASE_CREDENTIALS.feedbackWhatsapp : "";
+const FEEDBACK_EMAIL = (typeof FIREBASE_CREDENTIALS !== 'undefined' && FIREBASE_CREDENTIALS?.feedbackEmail)
+    ? FIREBASE_CREDENTIALS.feedbackEmail : "";
+const FEEDBACK_FORM_URL = (typeof FIREBASE_CREDENTIALS !== 'undefined' && FIREBASE_CREDENTIALS?.feedbackFormUrl)
+    ? FIREBASE_CREDENTIALS.feedbackFormUrl : "";
 
 // ─── Runtime state ────────────────────────────────────────────────────────────
 let firebaseApp = null;

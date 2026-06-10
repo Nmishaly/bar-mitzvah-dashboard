@@ -3,11 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://firestore.googleapis.com; img-src 'self' data:; font-src 'self';">
 <title>מערכת ניהול בר מצווה</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#4f46e5">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAXAIn1muiEnhEJJZn9E7t+6lV+ilkIABBnCTFoA==" crossorigin="anonymous"></script>
 <style>
   body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
   ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #f1f5f9; } ::-webkit-scrollbar-thumb { background: #c7d2fe; border-radius: 4px; }
@@ -109,7 +111,7 @@
         <!-- Add task form -->
         <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
           <div class="text-xs font-bold text-slate-600">משימה חדשה</div>
-          <input type="text" id="newTaskTitle" placeholder="כותרת המשימה..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" onkeydown="if(event.key==='Enter')addNewTask()">
+          <input type="text" id="newTaskTitle" placeholder="כותרת המשימה..." maxlength="200" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" onkeydown="if(event.key==='Enter')addNewTask()">
           <div class="grid grid-cols-2 gap-2">
             <input type="date" id="newTaskDeadline" class="p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
             <select id="newTaskResponsible" class="p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
@@ -159,7 +161,7 @@
         <!-- Add guest form -->
         <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
           <div class="text-xs font-bold text-slate-600">הוספת אורח/משפחה</div>
-          <input type="text" id="rsvpName" placeholder="שם משפחה / אורח..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <input type="text" id="rsvpName" placeholder="שם משפחה / אורח..." maxlength="100" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
           <div class="grid grid-cols-3 gap-2">
             <div class="space-y-1">
               <label class="text-xs text-slate-500">מבוגרים</label>
@@ -185,7 +187,7 @@
               <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50"><input type="checkbox" name="rsvpDietary" value="gluten-free" class="w-4 h-4 text-indigo-600"><span class="text-xs">🌾 ללא גלוטן</span></label>
               <label class="flex items-center gap-2 p-2 border border-slate-100 rounded-xl cursor-pointer hover:bg-slate-50"><input type="checkbox" name="rsvpDietary" value="mehadrin" class="w-4 h-4 text-indigo-600"><span class="text-xs">✡️ מהדרין</span></label>
             </div>
-            <input type="text" id="rsvpDietaryNote" placeholder="הערה מיוחדת לאוכל..." class="mt-2 w-full p-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <input type="text" id="rsvpDietaryNote" maxlength="300" placeholder="הערה מיוחדת לאוכל..." class="mt-2 w-full p-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
           </div>
           <div class="flex gap-4">
             <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="rsvpBabyCot" class="w-4 h-4 text-indigo-600"><span class="text-xs">🍼 צריך עריסה</span></label>
@@ -302,7 +304,7 @@
         <!-- Add item form -->
         <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
           <div class="text-xs font-bold text-slate-600">פריט חדש</div>
-          <input type="text" id="newShopTitle" placeholder="שם המוצר..." class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" onkeydown="if(event.key==='Enter')addNewShopItem()">
+          <input type="text" id="newShopTitle" placeholder="שם המוצר..." maxlength="200" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" onkeydown="if(event.key==='Enter')addNewShopItem()">
           <div class="flex gap-2 items-center">
             <select id="newShopCategory" class="flex-1 p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
               <option value="disposable">🍽️ כלים חד פעמיים</option>
@@ -666,7 +668,7 @@
 <div id="qrModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onclick="this.classList.add('hidden')">
   <div class="bg-white rounded-3xl shadow-2xl p-6 text-center space-y-4" onclick="event.stopPropagation()">
     <h3 class="font-extrabold text-slate-800">📱 QR קוד לאירוע</h3>
-    <img id="qrImage" src="" alt="QR Code" class="mx-auto rounded-xl shadow-md">
+    <div id="qrImageContainer" class="flex justify-center items-center min-h-[200px]"></div>
     <div class="text-xs text-slate-500 break-all" id="qrLink"></div>
     <button onclick="document.getElementById('qrModal').classList.add('hidden')" class="w-full py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-600">סגור</button>
   </div>

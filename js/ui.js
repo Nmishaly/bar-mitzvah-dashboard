@@ -766,13 +766,18 @@ function showQrCode() {
     const setup = getSetup();
     if (!setup?.eventId) { showToast('צור אירוע תחילה!'); return; }
     const link = buildShareLink(setup.eventId);
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(link)}`;
     const modal = document.getElementById('qrModal');
-    const img = document.getElementById('qrImage');
     const linkEl = document.getElementById('qrLink');
-    if (modal && img) {
-        img.src = qrUrl;
-        if (linkEl) linkEl.textContent = link;
-        modal.classList.remove('hidden');
+    const qrContainer = document.getElementById('qrImageContainer');
+    if (!modal || !qrContainer) return;
+
+    // Generate QR locally — no external requests
+    qrContainer.innerHTML = '';
+    if (typeof QRCode !== 'undefined') {
+        new QRCode(qrContainer, { text: link, width: 200, height: 200, correctLevel: QRCode.CorrectLevel.M });
+    } else {
+        qrContainer.innerHTML = `<div class="text-xs text-slate-400">QR לא זמין</div>`;
     }
+    if (linkEl) linkEl.textContent = link;
+    modal.classList.remove('hidden');
 }
