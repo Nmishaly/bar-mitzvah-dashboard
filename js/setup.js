@@ -16,11 +16,11 @@ function saveSetup(data) {
     localStorage.setItem(SETUP_KEY, JSON.stringify(data));
 }
 
-// Generate a unique event ID like "bm-a3k9x2"
+// Generate a unique event ID like "bm-a3k9x2r4"
 function generateEventId() {
     const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
     let id = 'bm-';
-    for (let i = 0; i < 6; i++) id += chars[Math.floor(Math.random() * chars.length)];
+    for (let i = 0; i < 10; i++) id += chars[Math.floor(Math.random() * chars.length)];
     return id;
 }
 

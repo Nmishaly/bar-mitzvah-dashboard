@@ -222,14 +222,14 @@ function toggleAllMeals(status) {
 async function addNewRsvp() {
     const nameEl = document.getElementById('rsvpName');
     if (!nameEl) return;
-    const name = nameEl.value.trim();
+    const name = nameEl.value.trim().slice(0, 100);
     if (!name) { showToast("אנא הזינו שם אורח או משפחה!"); return; }
 
     const duplicate = rsvps.find(g => g.name.trim().toLowerCase() === name.toLowerCase());
     if (duplicate && !confirm(`"${name}" כבר רשום/ה. להוסיף בכל זאת?`)) return;
 
-    const adults = parseInt(document.getElementById('rsvpAdults')?.value) || 0;
-    const kids = parseInt(document.getElementById('rsvpKids')?.value) || 0;
+    const adults = Math.min(50, Math.max(0, parseInt(document.getElementById('rsvpAdults')?.value) || 0));
+    const kids = Math.min(50, Math.max(0, parseInt(document.getElementById('rsvpKids')?.value) || 0));
     const sleep = document.getElementById('rsvpSleep')?.value || 'no';
     const babyCot = document.getElementById('rsvpBabyCot')?.checked || false;
     const cantAttend = document.getElementById('rsvpCantAttend')?.checked || false;
@@ -344,7 +344,7 @@ async function addNewTask() {
     const deadlineEl = document.getElementById('newTaskDeadline');
     const respEl = document.getElementById('newTaskResponsible');
     if (!titleEl) return;
-    const title = titleEl.value.trim();
+    const title = titleEl.value.trim().slice(0, 200);
     if (!title) { showToast("יש להזין שם למשימה!"); return; }
     const cfg = getEventConfig();
     const newTask = {
@@ -401,7 +401,7 @@ async function addNewShopItem() {
     const titleEl = document.getElementById('newShopTitle');
     const catEl = document.getElementById('newShopCategory');
     if (!titleEl) return;
-    const title = titleEl.value.trim();
+    const title = titleEl.value.trim().slice(0, 200);
     if (!title) { showToast("יש להזין שם למוצר!"); return; }
     const isFreshEl = document.getElementById('newShopIsFresh');
     const newItem = { id: 's_'+Date.now(), title, category: catEl?.value || 'drinks', bought: false, isFresh: isFreshEl?.checked || false };
@@ -616,11 +616,11 @@ function copyRoomsSummary() {
 // ─── Budget ───────────────────────────────────────────────────────────────────
 
 async function addNewExpense() {
-    const name = document.getElementById('newExpName').value.trim();
-    const price = parseFloat(document.getElementById('newExpPricePerUnit').value)||0;
-    const qty = parseFloat(document.getElementById('newExpQty').value)||1;
-    const paid = parseFloat(document.getElementById('newExpPaid').value)||0;
-    const method = document.getElementById('newExpMethod').value.trim()||'לא צוין';
+    const name = document.getElementById('newExpName').value.trim().slice(0, 200);
+    const price = Math.min(10000000, Math.max(0, parseFloat(document.getElementById('newExpPricePerUnit').value)||0));
+    const qty = Math.min(10000, Math.max(1, parseFloat(document.getElementById('newExpQty').value)||1));
+    const paid = Math.min(10000000, Math.max(0, parseFloat(document.getElementById('newExpPaid').value)||0));
+    const method = document.getElementById('newExpMethod').value.trim().slice(0, 50)||'לא צוין';
     const date = document.getElementById('newExpDate').value||new Date().toISOString().split('T')[0];
     if (!name || price <= 0) { showToast("אנא מלא שם ומחיר!"); return; }
     const newExp = { id: 'exp_'+Date.now(), name, totalAmount: price*qty, createdAt: Date.now(), payments: [{ amount: paid, method, date }] };
@@ -1001,8 +1001,14 @@ function importEventData() {
         try {
             const text = await file.text();
             const data = JSON.parse(text);
-            if (!data._version || !data.setup) {
+            if (!data._version || !data.setup || typeof data.setup !== 'object') {
                 showToast('קובץ הגיבוי אינו תקין.'); return;
+            }
+            if (typeof data.setup.boyName !== 'string' || typeof data.setup.eventId !== 'string') {
+                showToast('קובץ הגיבוי פגום — חסרים פרטי אירוע בסיסיים.'); return;
+            }
+            if (!Array.isArray(data.tasks) || !Array.isArray(data.rsvps)) {
+                showToast('קובץ הגיבוי פגום — מבנה נתונים לא תקין.'); return;
             }
             if (!confirm('שחזור יחליף את כל הנתונים הנוכחיים. להמשיך?')) return;
 

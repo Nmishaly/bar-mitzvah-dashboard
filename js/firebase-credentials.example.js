@@ -5,11 +5,17 @@
 // 3. The real credentials file is listed in .gitignore — it will never be committed.
 
 const FIREBASE_CREDENTIALS = {
+  // Firebase project config (Firebase Console → Project Settings → Your Apps → SDK setup)
   apiKey:            "",
   authDomain:        "",
   projectId:         "",
   storageBucket:     "",
   messagingSenderId: "",
   appId:             "",
-  measurementId:     ""   // optional — can be left empty
+  measurementId:     "",  // optional — can be left empty
+
+  // Feedback contact details (keep private — never commit this file)
+  feedbackWhatsapp:  "",  // e.g. "972521234567"
+  feedbackEmail:     "",  // e.g. "you@example.com"
+  feedbackFormUrl:   ""   // Google Form URL (optional)
 };
