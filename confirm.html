@@ -8,9 +8,12 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: linear-gradient(135deg, #312e81 0%, #4f46e5 50%, #7c3aed 100%); min-height: 100vh; }
-  .card { animation: slideUp 0.4s ease-out; }
-  @keyframes slideUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
-  .confetti { display: none; }
+  .card { animation: slideUp 0.35s ease-out; }
+  .step-section { animation: slideUp 0.25s ease-out; }
+  @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes popIn { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
+  .ty-icon { animation: popIn 0.5s ease-out 0.1s both; }
+  .ty-content { animation: slideUp 0.4s ease-out 0.3s both; }
 </style>
 </head>
 <body class="min-h-screen flex items-start justify-center p-4 py-8">
@@ -21,51 +24,71 @@
   <div id="loadingState" class="text-center text-white py-20">
     <div class="text-5xl mb-4">✡️</div>
     <div class="text-xl font-bold">טוען...</div>
+    <div class="mt-4 flex justify-center gap-2">
+      <div class="w-2 h-2 bg-indigo-300 rounded-full animate-bounce" style="animation-delay:0ms"></div>
+      <div class="w-2 h-2 bg-indigo-300 rounded-full animate-bounce" style="animation-delay:150ms"></div>
+      <div class="w-2 h-2 bg-indigo-300 rounded-full animate-bounce" style="animation-delay:300ms"></div>
+    </div>
   </div>
 
-  <!-- RSVP Form -->
+  <!-- RSVP Multi-step Form -->
   <div id="formState" class="hidden card">
     <!-- Header -->
-    <div class="text-center text-white mb-6">
-      <div class="text-6xl mb-4">✡️</div>
-      <h1 class="text-3xl font-black">הזמנה לשבת בר מצווה</h1>
-      <div class="mt-3 bg-white/10 rounded-2xl px-5 py-3 inline-block">
-        <div class="text-2xl font-black" id="cfmBoyName">—</div>
+    <div class="text-center text-white mb-5">
+      <div class="text-5xl mb-3">✡️</div>
+      <h1 class="text-2xl font-black">הזמנה לשבת בר מצווה</h1>
+      <div class="mt-2 bg-white/10 rounded-2xl px-5 py-3 inline-block">
+        <div class="text-xl font-black" id="cfmBoyName">—</div>
         <div class="text-indigo-200 text-sm mt-0.5" id="cfmEventDate">—</div>
       </div>
     </div>
 
+    <!-- Progress stepper -->
+    <div class="flex items-center justify-center gap-2 mb-5 px-4">
+      <div id="stepDot1" class="w-8 h-8 rounded-full bg-white text-indigo-700 font-extrabold text-sm flex items-center justify-center shadow-md transition-all">1</div>
+      <div id="stepLine1" class="flex-1 h-1 rounded-full bg-white/30 transition-all"></div>
+      <div id="stepDot2" class="w-8 h-8 rounded-full bg-white/30 text-white font-extrabold text-sm flex items-center justify-center transition-all">2</div>
+      <div id="stepLine2" class="flex-1 h-1 rounded-full bg-white/30 transition-all"></div>
+      <div id="stepDot3" class="w-8 h-8 rounded-full bg-white/30 text-white font-extrabold text-sm flex items-center justify-center transition-all">3</div>
+    </div>
+
     <!-- Card -->
     <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
-      <!-- Card header -->
-      <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-indigo-100 px-6 py-5 text-center">
-        <div class="text-lg font-extrabold text-slate-800">אנחנו שמחים להזמין אתכם! 🎉</div>
-        <div class="text-sm text-slate-500 mt-1">אנא מלאו את פרטי ההגעה שלכם</div>
+
+      <!-- ── Step 1: Name ── -->
+      <div id="stepSection1" class="step-section">
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-indigo-100 px-6 py-4 text-center">
+          <div class="text-base font-extrabold text-slate-800">שלב 1 מתוך 3 — מי מגיע?</div>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="space-y-1.5">
+            <label class="block text-sm font-bold text-slate-700">שם משפחה / שם מלא <span class="text-red-400">*</span></label>
+            <input type="text" id="cfmName" placeholder="לדוגמה: משפחת ישראלי" class="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold" autocomplete="name" onkeydown="if(event.key==='Enter')goToStep(2)">
+          </div>
+          <label class="flex items-center gap-3 p-3.5 border-2 border-slate-100 rounded-2xl cursor-pointer hover:border-red-200 hover:bg-red-50 transition">
+            <input type="checkbox" id="cfmCantAttend" onchange="toggleCantAttend()" class="w-5 h-5 text-red-400 shrink-0">
+            <div>
+              <div class="font-bold text-slate-800 text-sm">לצערי, לא נוכל להגיע 😔</div>
+              <div class="text-xs text-slate-500">נסמן כאן ונשלח ברכות</div>
+            </div>
+          </label>
+          <button onclick="goToStep(2)" id="stepNextBtn" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg">
+            המשך ←
+          </button>
+        </div>
       </div>
 
-      <div class="p-6 space-y-5">
-        <!-- Name -->
-        <div class="space-y-1.5">
-          <label class="block text-sm font-bold text-slate-700">שם משפחה / שם מלא <span class="text-red-400">*</span></label>
-          <input type="text" id="cfmName" placeholder="לדוגמה: משפחת ישראלי" class="w-full p-3.5 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none font-semibold" autocomplete="name">
+      <!-- ── Step 2: Details ── -->
+      <div id="stepSection2" class="step-section hidden">
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-indigo-100 px-6 py-4 text-center">
+          <div class="text-base font-extrabold text-slate-800">שלב 2 מתוך 3 — פרטי הגעה</div>
         </div>
-
-        <!-- Can't attend -->
-        <label class="flex items-center gap-3 p-3.5 border-2 border-slate-100 rounded-2xl cursor-pointer hover:border-red-200 hover:bg-red-50 transition" id="cantAttendLabel">
-          <input type="checkbox" id="cfmCantAttend" onchange="toggleCantAttend()" class="w-5 h-5 text-red-400">
-          <div>
-            <div class="font-bold text-slate-800 text-sm">לצערי, לא נוכל להגיע 😔</div>
-            <div class="text-xs text-slate-500">נסמן כאן ונשלח ברכות</div>
-          </div>
-        </label>
-
-        <!-- Attendance details (hidden when can't attend) -->
-        <div id="attendanceSection" class="space-y-5">
+        <div class="p-6 space-y-5">
           <!-- Guest count -->
           <div class="grid grid-cols-2 gap-3">
             <div class="space-y-1.5">
               <label class="block text-sm font-bold text-slate-700">מבוגרים</label>
-              <div class="flex items-center gap-2 border border-slate-200 rounded-2xl overflow-hidden">
+              <div class="flex items-center border border-slate-200 rounded-2xl overflow-hidden">
                 <button onclick="adjustCount('cfmAdults', -1)" class="px-3.5 py-3 text-slate-500 hover:bg-slate-100 font-bold text-lg">−</button>
                 <input type="number" id="cfmAdults" value="2" min="0" class="flex-1 text-center text-lg font-bold text-slate-800 border-0 focus:outline-none p-0">
                 <button onclick="adjustCount('cfmAdults', 1)" class="px-3.5 py-3 text-slate-500 hover:bg-slate-100 font-bold text-lg">+</button>
@@ -73,7 +96,7 @@
             </div>
             <div class="space-y-1.5">
               <label class="block text-sm font-bold text-slate-700">ילדים</label>
-              <div class="flex items-center gap-2 border border-slate-200 rounded-2xl overflow-hidden">
+              <div class="flex items-center border border-slate-200 rounded-2xl overflow-hidden">
                 <button onclick="adjustCount('cfmKids', -1)" class="px-3.5 py-3 text-slate-500 hover:bg-slate-100 font-bold text-lg">−</button>
                 <input type="number" id="cfmKids" value="0" min="0" class="flex-1 text-center text-lg font-bold text-slate-800 border-0 focus:outline-none p-0">
                 <button onclick="adjustCount('cfmKids', 1)" class="px-3.5 py-3 text-slate-500 hover:bg-slate-100 font-bold text-lg">+</button>
@@ -81,13 +104,13 @@
             </div>
           </div>
 
-          <!-- Meals (dynamic) -->
+          <!-- Meals -->
           <div id="cfmMealsSection" class="space-y-2">
             <label class="block text-sm font-bold text-slate-700">לאילו ארוחות תגיעו?</label>
             <div id="cfmMealsList" class="space-y-2"></div>
           </div>
 
-          <!-- Sleep (only shown if event has accommodation) -->
+          <!-- Sleep -->
           <div id="cfmSleepSection" class="hidden space-y-2">
             <label class="block text-sm font-bold text-slate-700">האם תישארו לישון?</label>
             <div class="flex gap-2">
@@ -96,17 +119,15 @@
             </div>
           </div>
 
-          <!-- Baby cot (shown when sleeping) -->
+          <!-- Baby cot -->
           <div id="cfmBabyCotSection" class="hidden">
             <label class="flex items-center gap-3 p-3.5 border border-slate-100 rounded-2xl cursor-pointer hover:bg-slate-50">
               <input type="checkbox" id="cfmBabyCot" class="w-5 h-5 text-indigo-600">
-              <div>
-                <div class="font-bold text-slate-800 text-sm">🍼 צריכים עריסה לתינוק</div>
-              </div>
+              <div class="font-bold text-slate-800 text-sm">🍼 צריכים עריסה לתינוק</div>
             </label>
           </div>
 
-          <!-- Dietary preferences -->
+          <!-- Dietary -->
           <div class="space-y-2">
             <label class="block text-sm font-bold text-slate-700">העדפות תזונה (אופציונלי)</label>
             <div class="grid grid-cols-2 gap-2">
@@ -129,23 +150,40 @@
             </div>
             <textarea id="cfmDietaryNote" rows="2" placeholder="הערה מיוחדת לגבי אוכל / אלרגיה..." class="w-full p-3 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none"></textarea>
           </div>
-        </div>
 
-        <!-- Submit button -->
-        <button onclick="submitRsvp()" id="submitBtn" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg">
-          אשר הגעה ✓
-        </button>
+          <div class="flex gap-2">
+            <button onclick="goToStep(1)" class="px-4 py-3 rounded-2xl text-sm font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 transition">→ חזרה</button>
+            <button onclick="goToStep(3)" class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold py-3 rounded-2xl text-base transition shadow-lg">לסיכום ←</button>
+          </div>
+        </div>
       </div>
+
+      <!-- ── Step 3: Summary + Submit ── -->
+      <div id="stepSection3" class="step-section hidden">
+        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-100 px-6 py-4 text-center">
+          <div class="text-base font-extrabold text-slate-800">שלב 3 מתוך 3 — סיכום ואישור</div>
+        </div>
+        <div class="p-6 space-y-4">
+          <div id="summaryCard" class="bg-slate-50 border border-slate-100 rounded-2xl p-4 space-y-2 text-sm text-slate-700"></div>
+          <button id="submitBtn" onclick="submitRsvp()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-extrabold py-4 rounded-2xl text-base transition shadow-lg">
+            אישור הגעה ✓
+          </button>
+          <button onclick="goToStep(2)" class="w-full py-2 rounded-2xl text-sm font-bold text-slate-500 hover:text-slate-700 transition">→ חזרה לעריכה</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <!-- Thank You Screen -->
-  <div id="thankYouState" class="hidden card text-center text-white py-8">
-    <div class="text-8xl mb-4" id="tyIcon">🎉</div>
-    <h2 class="text-3xl font-black mb-3" id="tyTitle">תודה רבה!</h2>
-    <p class="text-indigo-200 text-base mb-6 leading-relaxed" id="tyMessage">קיבלנו את אישורך. נתראה בשמחה!</p>
-    <div class="bg-white/10 rounded-2xl p-4 text-sm space-y-1" id="tySummary"></div>
-    <p class="text-indigo-300 text-sm mt-6">מזל טוב! 🌟</p>
+  <div id="thankYouState" class="hidden card text-center text-white py-10">
+    <div class="ty-icon text-8xl mb-4" id="tyIcon">🎉</div>
+    <div class="ty-content">
+      <h2 class="text-3xl font-black mb-3" id="tyTitle">תודה רבה!</h2>
+      <p class="text-indigo-200 text-base mb-6 leading-relaxed" id="tyMessage">קיבלנו את אישורך. נתראה בשמחה!</p>
+      <div class="bg-white/10 rounded-2xl p-5 text-sm space-y-2" id="tySummary"></div>
+      <p class="text-indigo-300 text-sm mt-6">מזל טוב! 🌟</p>
+    </div>
   </div>
 
   <!-- Error State -->
@@ -165,8 +203,10 @@
 let _eventId = null;
 let _setup = null;
 let _sleepAnswer = 'no';
+let _currentStep = 1;
 
 const MEAL_LABELS = { friday:'ערב שבת 🍷', saturday:'בוקר שבת ⛪', third:'סעודה שלישית 🥧' };
+const DIETARY_NAMES = { vegetarian:'צמחוני', vegan:'טבעוני', 'gluten-free':'ללא גלוטן', mehadrin:'מהדרין' };
 
 function getParams() {
     const p = new URLSearchParams(window.location.search);
@@ -176,31 +216,107 @@ function getParams() {
 function adjustCount(id, delta) {
     const el = document.getElementById(id);
     if (!el) return;
-    const val = Math.max(0, parseInt(el.value||0) + delta);
-    el.value = val;
+    el.value = Math.max(0, (parseInt(el.value) || 0) + delta);
 }
 
 function setSleepAnswer(val) {
     _sleepAnswer = val;
     const yesBtn = document.getElementById('cfmSleepYes');
-    const noBtn = document.getElementById('cfmSleepNo');
+    const noBtn  = document.getElementById('cfmSleepNo');
     const babyCotSection = document.getElementById('cfmBabyCotSection');
-    if (yesBtn) yesBtn.className = `flex-1 py-3 rounded-2xl text-sm font-bold border-2 ${val==='yes'?'border-indigo-600 bg-indigo-600 text-white':'border-slate-200 text-slate-600 hover:bg-slate-50'} transition`;
-    if (noBtn) noBtn.className = `flex-1 py-3 rounded-2xl text-sm font-bold border-2 ${val==='no'?'border-indigo-600 bg-indigo-600 text-white':'border-slate-200 text-slate-600 hover:bg-slate-50'} transition`;
+    const activeClass = 'border-indigo-600 bg-indigo-600 text-white';
+    const inactiveClass = 'border-slate-200 text-slate-600 hover:bg-slate-50';
+    if (yesBtn) yesBtn.className = `flex-1 py-3 rounded-2xl text-sm font-bold border-2 ${val==='yes' ? activeClass : inactiveClass} transition`;
+    if (noBtn)  noBtn.className  = `flex-1 py-3 rounded-2xl text-sm font-bold border-2 ${val==='no'  ? activeClass : inactiveClass} transition`;
     if (babyCotSection) babyCotSection.classList.toggle('hidden', val !== 'yes');
 }
 
 function toggleCantAttend() {
     const cantAttend = document.getElementById('cfmCantAttend').checked;
-    document.getElementById('attendanceSection').classList.toggle('hidden', cantAttend);
-    const submitBtn = document.getElementById('submitBtn');
-    if (submitBtn) submitBtn.textContent = cantAttend ? 'שלח ברכות 💌' : 'אשר הגעה ✓';
+    const nextBtn = document.getElementById('stepNextBtn');
+    if (nextBtn) nextBtn.textContent = cantAttend ? 'שלח ברכות 💌' : 'המשך ←';
+}
+
+function goToStep(step) {
+    if (step === 1) {
+        // no validation needed going back
+    }
+    if (step === 2) {
+        const name = document.getElementById('cfmName')?.value?.trim();
+        if (!name) { alert('אנא הזן/י את שמך'); return; }
+        const cantAttend = document.getElementById('cfmCantAttend')?.checked;
+        if (cantAttend) { submitRsvp(); return; }
+    }
+    if (step === 3) {
+        buildSummaryCard();
+    }
+
+    _currentStep = step;
+    [1, 2, 3].forEach(s => {
+        const section = document.getElementById('stepSection' + s);
+        if (section) section.classList.toggle('hidden', s !== step);
+    });
+    updateStepDots(step);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateStepDots(step) {
+    [1, 2, 3].forEach(s => {
+        const dot = document.getElementById('stepDot' + s);
+        const line = document.getElementById('stepLine' + s);
+        if (!dot) return;
+        if (s < step) {
+            dot.className = 'w-8 h-8 rounded-full bg-emerald-400 text-white font-extrabold text-sm flex items-center justify-center transition-all';
+            dot.textContent = '✓';
+        } else if (s === step) {
+            dot.className = 'w-8 h-8 rounded-full bg-white text-indigo-700 font-extrabold text-sm flex items-center justify-center shadow-md transition-all';
+            dot.textContent = s;
+        } else {
+            dot.className = 'w-8 h-8 rounded-full bg-white/30 text-white font-extrabold text-sm flex items-center justify-center transition-all';
+            dot.textContent = s;
+        }
+        if (line) line.className = `flex-1 h-1 rounded-full transition-all ${s < step ? 'bg-emerald-400' : 'bg-white/30'}`;
+    });
+}
+
+function buildSummaryCard() {
+    const name = document.getElementById('cfmName')?.value?.trim() || '';
+    const adults = parseInt(document.getElementById('cfmAdults')?.value) || 0;
+    const kids = parseInt(document.getElementById('cfmKids')?.value) || 0;
+    const dietary = Array.from(document.querySelectorAll('input[name="cfmDietary"]:checked')).map(cb => cb.value);
+    const dietaryNote = document.getElementById('cfmDietaryNote')?.value?.trim() || '';
+    const sleepVisible = !document.getElementById('cfmSleepSection')?.classList.contains('hidden');
+    const activeMeals = (_setup?.meals || ['friday','saturday','third']);
+    const selectedMeals = activeMeals.filter(m => document.getElementById('cfmMeal_' + m)?.checked);
+
+    const card = document.getElementById('summaryCard');
+    if (!card) return;
+
+    const rows = [
+        `<div class="flex gap-2"><span class="text-slate-400">👤 שם:</span><span class="font-bold">${escText(name)}</span></div>`,
+        `<div class="flex gap-2"><span class="text-slate-400">👨‍👩‍👧‍👦 מגיעים:</span><span class="font-bold">${adults} מבוגרים${kids ? ` + ${kids} ילדים` : ''}</span></div>`,
+    ];
+    if (selectedMeals.length) {
+        rows.push(`<div class="flex gap-2"><span class="text-slate-400">🍽️ ארוחות:</span><span class="font-bold">${selectedMeals.map(m => MEAL_LABELS[m]||m).join(', ')}</span></div>`);
+    }
+    if (sleepVisible) {
+        rows.push(`<div class="flex gap-2"><span class="text-slate-400">🛏 לינה:</span><span class="font-bold">${_sleepAnswer === 'yes' ? 'כן' : 'לא'}</span></div>`);
+    }
+    if (dietary.length) {
+        rows.push(`<div class="flex gap-2"><span class="text-slate-400">🥗 תזונה:</span><span class="font-bold">${dietary.map(d => DIETARY_NAMES[d]||d).join(', ')}</span></div>`);
+    }
+    if (dietaryNote) {
+        rows.push(`<div class="flex gap-2"><span class="text-slate-400">📝 הערה:</span><span class="font-bold">${escText(dietaryNote)}</span></div>`);
+    }
+    card.innerHTML = rows.join('');
+}
+
+function escText(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 async function loadSetupFromCloud(eventId) {
-    if (!FIREBASE_CONFIG.apiKey || !FIREBASE_CONFIG.projectId) {
-        return null;
-    }
+    if (!FIREBASE_CONFIG.apiKey || !FIREBASE_CONFIG.projectId) return null;
     try {
         const [{ initializeApp }, { getAuth, signInAnonymously }, { getFirestore, doc, getDoc }] = await Promise.all([
             import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'),
@@ -253,7 +369,6 @@ function showForm(setup) {
     document.getElementById('loadingState').classList.add('hidden');
     document.getElementById('formState').classList.remove('hidden');
 
-    // Fill boy name and date
     const boyName = setup?.boyName || 'הבר מצווה';
     document.getElementById('cfmBoyName').textContent = 'בר מצווה של ' + boyName;
 
@@ -264,7 +379,6 @@ function showForm(setup) {
 
     renderMeals(setup);
 
-    // Show sleep section only if accommodation
     if (setup?.hasAccommodation) {
         document.getElementById('cfmSleepSection').classList.remove('hidden');
     }
@@ -277,25 +391,21 @@ function formatHebrewDate(dateStr) {
 }
 
 async function submitRsvp() {
-    const name = document.getElementById('cfmName').value.trim();
+    const name = document.getElementById('cfmName')?.value?.trim();
     if (!name) { alert('אנא הזן/י את שמך'); return; }
 
     const submitBtn = document.getElementById('submitBtn');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'שולח...'; }
 
-    const cantAttend = document.getElementById('cfmCantAttend').checked;
-    const adults = cantAttend ? 0 : parseInt(document.getElementById('cfmAdults').value) || 0;
-    const kids = cantAttend ? 0 : parseInt(document.getElementById('cfmKids').value) || 0;
-    const sleep = cantAttend ? 'no' : _sleepAnswer;
+    const cantAttend = document.getElementById('cfmCantAttend')?.checked || false;
+    const adults = cantAttend ? 0 : (parseInt(document.getElementById('cfmAdults')?.value) || 0);
+    const kids   = cantAttend ? 0 : (parseInt(document.getElementById('cfmKids')?.value)   || 0);
+    const sleep  = cantAttend ? 'no' : _sleepAnswer;
     const babyCot = cantAttend ? false : (document.getElementById('cfmBabyCot')?.checked || false);
     const dietaryNote = cantAttend ? '' : (document.getElementById('cfmDietaryNote')?.value?.trim() || '');
-
     const dietary = cantAttend ? [] : Array.from(document.querySelectorAll('input[name="cfmDietary"]:checked')).map(cb => cb.value);
-    const meals = cantAttend ? [] : (() => {
-        const setup = _setup || {};
-        const activeMeals = setup.meals || ['friday','saturday','third'];
-        return activeMeals.filter(m => document.getElementById('cfmMeal_' + m)?.checked);
-    })();
+    const activeMeals = (_setup?.meals || ['friday','saturday','third']);
+    const meals = cantAttend ? [] : activeMeals.filter(m => document.getElementById('cfmMeal_' + m)?.checked);
 
     const rsvp = {
         id: 'g_confirm_' + Date.now() + '_' + Math.random().toString(36).slice(2,6),
@@ -303,7 +413,16 @@ async function submitRsvp() {
         createdAt: Date.now(), source: 'confirm_page'
     };
 
-    await submitToCloud(rsvp);
+    // Submit with 8-second timeout — always show thank-you regardless of cloud status
+    try {
+        await Promise.race([
+            submitToCloud(rsvp),
+            new Promise(resolve => setTimeout(resolve, 8000))
+        ]);
+    } catch(e) {
+        console.error('RSVP submission error:', e);
+    }
+
     showThankYou(rsvp);
 }
 
@@ -312,23 +431,40 @@ function showThankYou(rsvp) {
     const tyState = document.getElementById('thankYouState');
     tyState.classList.remove('hidden');
 
+    const icon = document.getElementById('tyIcon');
+    const title = document.getElementById('tyTitle');
+    const message = document.getElementById('tyMessage');
+    const summary = document.getElementById('tySummary');
+
     if (rsvp.cantAttend) {
-        document.getElementById('tyIcon').textContent = '💌';
-        document.getElementById('tyTitle').textContent = 'ברכות שלנו!';
-        document.getElementById('tyMessage').textContent = 'מצטערים שלא תוכלו להגיע. נשמח לקבל ברכות בכל זמן!';
-        document.getElementById('tySummary').innerHTML = `<div>קיבלנו את הודעתך, ${rsvp.name} 🙏</div>`;
+        if (icon) icon.textContent = '💌';
+        if (title) title.textContent = 'ברכות שלנו!';
+        if (message) message.textContent = 'מצטערים שלא תוכלו להגיע. נשמח לקבל ברכות בכל זמן!';
+        if (summary) {
+            const nameEl = document.createElement('div');
+            nameEl.textContent = `קיבלנו את הודעתך — ${rsvp.name} 🙏`;
+            summary.innerHTML = '';
+            summary.appendChild(nameEl);
+        }
     } else {
-        document.getElementById('tyTitle').textContent = 'מחכים לכם! 🎉';
-        document.getElementById('tyMessage').textContent = 'אישורך התקבל. נתראה בשמחה!';
-        const dietaryNames = { vegetarian:'צמחוני', vegan:'טבעוני', 'gluten-free':'ללא גלוטן', mehadrin:'מהדרין' };
-        const summary = [
-            `👤 ${rsvp.name}`,
-            `👨‍👩‍👧‍👦 ${rsvp.adults} מבוגרים${rsvp.kids ? ` + ${rsvp.kids} ילדים` : ''}`,
-            rsvp.sleep === 'yes' ? '🛏 נשאר ללינה' : '',
-            rsvp.babyCot ? '🍼 צריך עריסה' : '',
-            rsvp.dietary?.length ? `🍽 ${rsvp.dietary.map(d=>dietaryNames[d]||d).join(', ')}` : ''
-        ].filter(Boolean);
-        document.getElementById('tySummary').innerHTML = summary.map(s => `<div>${s}</div>`).join('');
+        if (title) title.textContent = 'מחכים לכם! 🎉';
+        if (message) message.textContent = 'אישורך התקבל. נתראה בשמחה!';
+        if (summary) {
+            const lines = [
+                `👤 ${rsvp.name}`,
+                `👨‍👩‍👧‍👦 ${rsvp.adults} מבוגרים${rsvp.kids ? ` + ${rsvp.kids} ילדים` : ''}`,
+                rsvp.sleep === 'yes' ? '🛏 נשאר ללינה' : null,
+                rsvp.babyCot ? '🍼 צריך עריסה' : null,
+                rsvp.dietary?.length ? `🥗 ${rsvp.dietary.map(d => DIETARY_NAMES[d]||d).join(', ')}` : null,
+            ].filter(Boolean);
+
+            summary.innerHTML = '';
+            lines.forEach(line => {
+                const div = document.createElement('div');
+                div.textContent = line;
+                summary.appendChild(div);
+            });
+        }
     }
 }
 
@@ -342,16 +478,8 @@ window.onload = async function() {
         return;
     }
     _eventId = eventId;
-
-    // Try to load setup from cloud
     _setup = await loadSetupFromCloud(eventId);
-
-    if (_setup) {
-        showForm(_setup);
-    } else {
-        // No Firebase or setup not found — show generic form
-        showForm(null);
-    }
+    showForm(_setup);
 };
 </script>
 </body>

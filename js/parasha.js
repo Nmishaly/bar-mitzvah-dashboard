@@ -1,19 +1,34 @@
 // ─── Torah Portion (Parasha) Lookup ──────────────────────────────────────────
 // Maps Hebrew year → parasha name → Shabbat date (Friday = event date)
-// Includes 5785–5789 (2024–2029). Dates are computed for Israel.
-// Leap years (שנה מעוברת): 5785, 5788 — all parshiyot read individually.
+// Includes 5785–5791 (2024–2031). Dates are computed for Israel.
+// Leap years (שנה מעוברת): 5785, 5788, 5791 — all parshiyot read individually.
 // Regular years: certain parshiyot are combined (marked with /).
 
 const HEBREW_LEAP_YEARS = new Set([5785, 5788, 5791]);
 
-// Determine Hebrew year from Gregorian date (approximate)
+// Exact Rosh Hashana (start of Hebrew year) dates for covered Gregorian years
+const ROSH_HASHANA_DATES = {
+    2024: '2024-10-03',
+    2025: '2025-09-23',
+    2026: '2026-09-12',
+    2027: '2027-10-02',
+    2028: '2028-09-21',
+    2029: '2029-09-09',
+    2030: '2030-09-28',
+    2031: '2031-09-18',
+};
+
+// Determine Hebrew year from Gregorian date using exact Rosh Hashana dates
 function getHebrewYear(date) {
     const d = date || new Date();
     const year = d.getFullYear();
-    const month = d.getMonth() + 1;
-    // Hebrew year starts in September/October
-    // Rough approximation: add 3760 for Jan–Aug, 3761 for Sep–Dec
-    return month >= 9 ? year + 3761 : year + 3760;
+    const rhStr = ROSH_HASHANA_DATES[year];
+    if (rhStr) {
+        const rh = new Date(rhStr + 'T00:00:00');
+        return d >= rh ? year + 3761 : year + 3760;
+    }
+    // Fallback for years beyond the lookup table (October is always after RH)
+    return (d.getMonth() + 1) >= 10 ? year + 3761 : year + 3760;
 }
 
 function isHebrewLeapYear(hebrewYear) {

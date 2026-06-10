@@ -323,6 +323,9 @@ function completeSetup() {
     } else {
         eventDate = document.getElementById('setupEventDate').value;
         if (!eventDate) { showToast('נא לבחור תאריך אירוע!'); return; }
+        if (new Date(eventDate + 'T00:00:00') <= new Date(new Date().toDateString())) {
+            showToast('תאריך האירוע חייב להיות בעתיד!'); return;
+        }
     }
 
     const budget = parseFloat(document.getElementById('setupBudget').value) || null;

@@ -502,21 +502,27 @@
       </div>
     </div>
 
-    <!-- Share section -->
+    <!-- Share: co-organizers -->
     <div class="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <div class="text-sm font-extrabold text-indigo-800">🔗 שיתוף האירוע</div>
+      <div class="text-sm font-extrabold text-indigo-800">👨‍👩‍👧 שיתוף עם מארגנים</div>
+      <p class="text-xs text-slate-600 leading-relaxed">שתפו את הלינק הזה עם בני משפחה שמנהלים את האירוע יחד אתכם (אבא, אמא, סבא, וכו׳). <strong>לא לשתף עם אורחים.</strong></p>
       <div class="bg-white border border-indigo-100 rounded-xl px-3 py-2.5 flex items-center justify-between gap-2">
-        <span class="text-sm font-mono text-indigo-700 font-bold" id="settingsEventId">—</span>
-        <button onclick="copyShareLink()" class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded-lg hover:bg-indigo-100">העתק</button>
+        <span class="text-xs font-mono text-indigo-700 font-bold truncate" id="settingsEventId">—</span>
+        <button onclick="copyShareLink()" class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-1 rounded-lg hover:bg-indigo-100 shrink-0">העתק</button>
       </div>
       <div class="flex gap-2">
-        <button onclick="copyShareLink()" class="flex-1 bg-white border border-slate-200 text-slate-700 text-xs font-bold py-2.5 rounded-xl hover:bg-slate-50 shadow-sm transition">📋 העתק קישור</button>
-        <button onclick="shareEventWhatsApp()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-2.5 rounded-xl shadow-sm transition">📲 שתף בוואטסאפ</button>
-        <button onclick="showQrCode()" class="bg-white border border-slate-200 text-slate-700 text-xs font-bold py-2.5 px-3 rounded-xl hover:bg-slate-50 shadow-sm transition">QR</button>
+        <button onclick="shareEventWhatsApp()" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold py-2.5 rounded-xl shadow-sm transition">📲 שלח בוואטסאפ</button>
+        <button onclick="showQrCode()" class="bg-white border border-slate-200 text-slate-700 text-xs font-bold py-2.5 px-3 rounded-xl hover:bg-slate-50 shadow-sm transition">📷 QR</button>
       </div>
-      <div class="border-t border-indigo-100 pt-3">
-        <div class="text-xs font-bold text-indigo-800 mb-2">לינק לאישור הגעה לאורחים</div>
-        <button onclick="copyConfirmLink()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-xl transition">📋 העתק לינק אישור הגעה</button>
+    </div>
+
+    <!-- Share: RSVP guests -->
+    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-4 shadow-sm space-y-3">
+      <div class="text-sm font-extrabold text-emerald-800">📨 לינק אישור הגעה לאורחים</div>
+      <p class="text-xs text-slate-600 leading-relaxed">שתפו את הלינק הזה עם האורחים שלכם — הם ימלאו אישור הגעה דרך טופס ידידותי.</p>
+      <div class="flex gap-2">
+        <button onclick="copyConfirmLink()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 rounded-xl transition">📋 העתק לינק</button>
+        <button onclick="shareConfirmWhatsApp()" class="flex-1 bg-white border border-emerald-200 text-emerald-700 text-xs font-bold py-2.5 rounded-xl hover:bg-emerald-50 shadow-sm transition">📲 שלח בוואטסאפ</button>
       </div>
     </div>
 
@@ -526,23 +532,27 @@
       <div id="settingsEditForm"></div>
     </div>
 
-    <!-- Firebase instructions -->
+    <!-- Cloud status card -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div id="settingsCloudDot" class="w-3 h-3 rounded-full bg-slate-300"></div>
+          <div>
+            <div class="text-sm font-bold text-slate-800" id="settingsCloudStatus">מקומי בלבד</div>
+            <div class="text-xs text-slate-500" id="settingsCloudDesc">הנתונים נשמרים במכשיר זה בלבד</div>
+          </div>
+        </div>
+        <div class="text-2xl">☁️</div>
+      </div>
+    </div>
+
+    <!-- Backup / Restore -->
     <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-      <button onclick="document.getElementById('firebaseInstructions').classList.toggle('hidden')" class="w-full flex items-center justify-between text-sm font-extrabold text-slate-800">
-        <span>☁️ חיבור ל-Firebase (גיבוי בענן)</span>
-        <span class="text-slate-400 text-lg">›</span>
-      </button>
-      <div id="firebaseInstructions" class="hidden space-y-3 text-sm text-slate-700 border-t border-slate-100 pt-3">
-        <p class="text-xs text-slate-600 leading-relaxed">Firebase מאפשר סנכרון בין כל בני המשפחה המנהלים את האירוע. ללא Firebase — הנתונים נשמרים רק במכשיר הנוכחי.</p>
-        <ol class="space-y-2 text-xs text-slate-700">
-          <li class="flex gap-2"><span class="bg-indigo-100 text-indigo-700 font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0 text-xs">1</span><span>גשו ל-<strong>console.firebase.google.com</strong> והתחברו עם חשבון Google</span></li>
-          <li class="flex gap-2"><span class="bg-indigo-100 text-indigo-700 font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0 text-xs">2</span><span>לחצו <strong>"Add project"</strong> ותנו לפרויקט שם (לדוגמה: bar-mitzvah-2026)</span></li>
-          <li class="flex gap-2"><span class="bg-indigo-100 text-indigo-700 font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0 text-xs">3</span><span>בפרויקט, לחצו על <strong>&lt;/&gt;</strong> (Web App) ורשמו שם לאפליקציה</span></li>
-          <li class="flex gap-2"><span class="bg-indigo-100 text-indigo-700 font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0 text-xs">4</span><span>העתיקו את הנתונים מה-<strong>firebaseConfig</strong> שמופיע</span></li>
-          <li class="flex gap-2"><span class="bg-indigo-100 text-indigo-700 font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0 text-xs">5</span><span>בסייד-בר: <strong>Build → Firestore Database</strong> → צרו מסד נתונים ב-<strong>Test Mode</strong></span></li>
-          <li class="flex gap-2"><span class="bg-indigo-100 text-indigo-700 font-bold rounded-full w-5 h-5 flex items-center justify-center shrink-0 text-xs">6</span><span>פתחו את קובץ <strong>js/config.js</strong> במחשב והדביקו את הנתונים בשדות המתאימים</span></li>
-        </ol>
-        <div class="bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-amber-800">⚠️ לאחר הוספת פרטי Firebase — טענו מחדש את הדף</div>
+      <div class="text-sm font-extrabold text-slate-800">💾 גיבוי ושחזור נתונים</div>
+      <p class="text-xs text-slate-500 leading-relaxed">הורידו את כל נתוני האירוע כקובץ גיבוי. שמרו אותו בצד — תמיד תוכלו לשחזר ממנו.</p>
+      <div class="flex gap-2">
+        <button onclick="exportEventData()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-2.5 rounded-xl shadow-sm transition">⬇️ הורד גיבוי</button>
+        <button onclick="importEventData()" class="flex-1 bg-white border border-slate-300 text-slate-700 text-xs font-bold py-2.5 rounded-xl hover:bg-slate-50 shadow-sm transition">⬆️ שחזר מגיבוי</button>
       </div>
     </div>
   </div>
